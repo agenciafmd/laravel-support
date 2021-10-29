@@ -1,0 +1,36 @@
+{
+    "name": "agenciafmd/laravel-support",
+    "description": "Itens uteis para serem utilizados nos projetos",
+    "homepage": "https://github.com/agenciafmd/laravel-support",
+    "authors": [
+        {
+            "name": "Irineu Junior",
+            "email": "irineu@fmd.ag",
+            "homepage": "https://fmd.ag/",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "laravel/framework": "8.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Agenciafmd\\Support\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Agenciafmd\\Support\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Agenciafmd\\Support\\Providers\\SupportServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
