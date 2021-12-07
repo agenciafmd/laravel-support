@@ -16,9 +16,9 @@ class Helper
      * @param int $finalChars
      * @return string
      */
-    public static function secret_phone(string $string, int $initialChars = 4, int $finalChars = 2): string
+    public static function secretPhone(string $string, int $initialChars = 4, int $finalChars = 2): string
     {
-        $string = Helper::only_numbers($string);
+        $string = Helper::onlyNumbers($string);
 
         if (!$string) {
             return '';
@@ -37,7 +37,7 @@ class Helper
      * @param string $string
      * @return string
      */
-    public static function only_numbers(string $string): string
+    public static function onlyNumbers(string $string): string
     {
         return preg_replace('/[^0-9]/', '', $string);
     }
@@ -48,7 +48,7 @@ class Helper
      * @param string $string
      * @return string
      */
-    public static function only_alphanumeric(string $string): string
+    public static function onlyAlphanumeric(string $string): string
     {
         return preg_replace('/[[:^alnum:]]/', '', $string);
     }
@@ -78,13 +78,13 @@ class Helper
      * @param mixed $phone
      * @return string | null
      */
-    public static function sanitize_phone($phone): ?string
+    public static function sanitizePhone($phone): ?string
     {
         if (!$phone) {
             return null;
         }
 
-        $numericPhone = Helper::only_numbers($phone);
+        $numericPhone = Helper::onlyNumbers($phone);
 
         if (Str::length($numericPhone) === 10) {
             return Helper::mask($numericPhone, '(##) ####-####');
@@ -103,7 +103,7 @@ class Helper
      * @param mixed $cpf
      * @return string | null
      */
-    public static function sanitize_cpf($cpf): ?string
+    public static function sanitizeCpf($cpf): ?string
     {
         if (!$cpf) {
             return null;
@@ -114,7 +114,7 @@ class Helper
             return null;
         }
 
-        $cpf = Helper::only_numbers($cpf);
+        $cpf = Helper::onlyNumbers($cpf);
 
         return Helper::mask($cpf, '###.###.###-##');
     }
@@ -125,7 +125,7 @@ class Helper
      * @param mixed $cnpj
      * @return string | null
      */
-    public static function sanitize_cnpj($cnpj): ?string
+    public static function sanitizeCnpj($cnpj): ?string
     {
         if (!$cnpj) {
             return null;
@@ -136,7 +136,7 @@ class Helper
             return null;
         }
 
-        $cnpj = Helper::only_numbers($cnpj);
+        $cnpj = Helper::onlyNumbers($cnpj);
 
         return Helper::mask($cnpj, '##.###.###/####-##');
     }
@@ -147,16 +147,16 @@ class Helper
      * @param mixed $rg
      * @return string | null
      */
-    public static function sanitize_rg($rg): ?string
+    public static function sanitizeRg($rg): ?string
     {
         if (!$rg) {
             return null;
         }
 
-        $rg = Helper::only_alphanumeric($rg);
+        $rg = Helper::onlyAlphanumeric($rg);
 
         $digit = substr($rg, -1);
-        $body = Helper::only_numbers(substr($rg, 0, -1));
+        $body = Helper::onlyNumbers(substr($rg, 0, -1));
         $pieces = str_split(strrev($body), 3);
         $body = strrev(implode('.', $pieces));
 
@@ -169,7 +169,7 @@ class Helper
      * @param mixed $email
      * @return string | null
      */
-    public static function sanitize_email($email): ?string
+    public static function sanitizeEmail($email): ?string
     {
         if (!$email) {
             return null;
@@ -191,7 +191,7 @@ class Helper
      * @param string $name
      * @return string
      */
-    public static function sanitize_name(string $name): string
+    public static function sanitizeName(string $name): string
     {
         $search = ["De ", "Do ", "Dos ", "Da ", "Das "];
         $replace = ["de ", "do ", "dos ", "da ", "das "];
@@ -209,13 +209,13 @@ class Helper
      * @param mixed $postalCode
      * @return string | null
      */
-    public static function sanitize_postal_code($postalCode): ?string
+    public static function sanitizePostalCode($postalCode): ?string
     {
         if (!$postalCode) {
             return null;
         }
 
-        $postalCode = Helper::only_numbers($postalCode);
+        $postalCode = Helper::onlyNumbers($postalCode);
 
         return Helper::mask($postalCode, '#####-###');
     }
@@ -226,7 +226,7 @@ class Helper
      * @param mixed $schedule
      * @return string | null
      */
-    public static function sanitize_schedule($schedule): ?string
+    public static function sanitizeSchedule($schedule): ?string
     {
         $schedule = trim($schedule);
 
