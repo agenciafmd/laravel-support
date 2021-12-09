@@ -306,4 +306,26 @@ class Helper
             'data' => $data,
         ], $code);
     }
+
+    /**
+     * Formata inteiro para moeda
+     *
+     * @param mixed $value
+     * @return string | null
+     */
+    public static function formatMoney($value, $currency = 'R$ '): ?string
+    {
+        if (!$value) {
+            return null;
+        }
+
+        $value = Helper::onlyNumbers($value);
+
+        $decimal = substr($value, -2);
+        $body = substr($value, 0, -2);
+        $pieces = str_split(strrev($body), 3);
+        $body = strrev(implode('.', $pieces));
+
+        return "{$currency}{$body},{$decimal}";
+    }
 }

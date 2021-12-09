@@ -27,7 +27,10 @@
         "laravel": {
             "providers": [
                 "Agenciafmd\\Support\\Providers\\SupportServiceProvider"
-            ]
+            ],
+            "aliases": {
+                "Helper": "\\Facades\\Agenciafmd\\Support\\Helper"
+            }
         }
     },
     "config": {
