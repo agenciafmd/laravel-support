@@ -5,6 +5,7 @@ namespace Agenciafmd\Support;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use voku\helper\ASCII;
 
 class Helper
 {
@@ -174,6 +175,8 @@ class Helper
         if (!$email) {
             return null;
         }
+
+        $email = ASCII::to_ascii((string)$email, 'en');
 
         $validator = app('validator')->make(['email' => $email], ['email' => 'email:rfc,dns']);
         if ($validator->fails()) {
