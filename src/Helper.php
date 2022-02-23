@@ -331,4 +331,31 @@ class Helper
 
         return "{$currency}{$body},{$decimal}";
     }
+
+    public static function httpStripQueryParam(string $param, string|null $value = null, string|null $url = null): string
+    {
+        if (!$url) {
+            $url = request()->fullUrl();
+        }
+
+        $baseUrl = strtok($url, '?');
+        $pieces = parse_url($url);
+
+        $query = [];
+        if (isset($pieces['query']) && $pieces['query']) {
+            parse_str($pieces['query'], $query);
+
+            if (is_array($query[$param]) && $value) {
+                if (($key = array_search($value, $query[$param])) !== false) {
+                    unset($query[$param][$key]);
+                }
+            } else {
+                unset($query[$param]);
+            }
+        }
+
+        $newQuery = http_build_query($query);
+
+        return $baseUrl . (($newQuery) ? '?' . $newQuery : '');
+    }
 }
