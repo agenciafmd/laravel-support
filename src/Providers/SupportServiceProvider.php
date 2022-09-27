@@ -34,5 +34,9 @@ class SupportServiceProvider extends ServiceProvider
         Stringable::macro('localSquish', function () {
             return new Stringable(preg_replace('~(\s|\x{3164})+~u', ' ', preg_replace('~^[\s﻿]+|[\s﻿]+$~u', '', $this->value)));
         });
+
+        Stringable::macro('numbersToWords', function () {
+            return new Stringable(Helper::numbersToWords($this->value));
+        });
     }
 }
