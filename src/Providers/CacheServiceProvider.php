@@ -35,8 +35,10 @@ class CacheServiceProvider extends ServiceProvider
 
         if ($this->app->environment(['local']) && !$this->app->runningInConsole()) {
             $cache = app(CacheRepository::class);
-            $cache->tags('views')
-                ->flush();
+            if ($cache->supportsTags()) {
+                $cache->tags('views')
+                    ->flush();
+            }
         }
     }
 

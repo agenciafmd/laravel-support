@@ -23,6 +23,7 @@ class SupportServiceProvider extends ServiceProvider
     protected function providers()
     {
         $this->app->register(CacheServiceProvider::class);
+        $this->app->register(StrServiceProvider::class);
     }
 
     protected function stringableMacros()
