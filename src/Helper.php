@@ -16,7 +16,7 @@ class Helper
     {
         $string = Helper::onlyNumbers($string);
 
-        if (! $string) {
+        if (!$string) {
             return '';
         }
 
@@ -63,7 +63,7 @@ class Helper
      */
     public static function sanitizePhone(mixed $phone): ?string
     {
-        if (! $phone) {
+        if (!$phone) {
             return null;
         }
 
@@ -85,7 +85,7 @@ class Helper
      */
     public static function sanitizeCpf(mixed $cpf): ?string
     {
-        if (! $cpf) {
+        if (!$cpf) {
             return null;
         }
 
@@ -104,7 +104,7 @@ class Helper
      */
     public static function sanitizeCnpj(mixed $cnpj): ?string
     {
-        if (! $cnpj) {
+        if (!$cnpj) {
             return null;
         }
 
@@ -123,7 +123,7 @@ class Helper
      */
     public static function sanitizeRg(mixed $rg): ?string
     {
-        if (! $rg) {
+        if (!$rg) {
             return null;
         }
 
@@ -142,7 +142,7 @@ class Helper
      */
     public static function sanitizeEmail(mixed $email): ?string
     {
-        if (! $email) {
+        if (!$email) {
             return null;
         }
 
@@ -178,7 +178,7 @@ class Helper
      */
     public static function sanitizePostalCode(mixed $postalCode): ?string
     {
-        if (! $postalCode) {
+        if (!$postalCode) {
             return null;
         }
 
@@ -194,7 +194,7 @@ class Helper
     {
         $schedule = trim($schedule);
 
-        if (! $schedule) {
+        if (!$schedule) {
             return null;
         }
 
@@ -202,7 +202,7 @@ class Helper
             return null;
         }
 
-        if (! Str::contains($schedule, ':')) {
+        if (!Str::contains($schedule, ':')) {
             return null;
         }
 
@@ -215,18 +215,6 @@ class Helper
         $minute = Str::padLeft($minute, 2, '0');
 
         return "{$hour}:{$minute}";
-    }
-
-    /**
-     * Retorna somente caracteres que podem ser visualizados
-     */
-    public static function printable(string $string): ?string
-    {
-        if (! $string) {
-            return null;
-        }
-
-        return preg_replace('/[[:^print:]]/', '', $string);
     }
 
     /**
@@ -263,7 +251,7 @@ class Helper
      */
     public static function formatMoney(mixed $value, string $currency = 'R$ '): ?string
     {
-        if (! $value) {
+        if (!$value) {
             return null;
         }
 
@@ -282,7 +270,7 @@ class Helper
      */
     public static function httpStripQueryParam(string $param, ?string $value = null, ?string $url = null): string
     {
-        if (! $url) {
+        if (!$url) {
             $url = request()->fullUrl();
         }
 
@@ -305,36 +293,5 @@ class Helper
         $newQuery = http_build_query($query);
 
         return $baseUrl . (($newQuery) ? '?' . $newQuery : '');
-    }
-
-    /**
-     * Converte os números de uma string para palavras
-     */
-    public static function numbersToWords(mixed $value): string
-    {
-        $numbersChars = [
-            '0' => 'zero',
-            '1' => 'um',
-            '2' => 'dois',
-            '3' => 'tres',
-            '4' => 'quatro',
-            '5' => 'cinco',
-            '6' => 'seis',
-            '7' => 'sete',
-            '8' => 'oito',
-            '9' => 'nove',
-        ];
-
-        $name = Str::of($value)
-            ->localSquish()
-            ->ascii()
-            ->split('//');
-
-        $convertedString = '';
-        foreach ($name as $char) {
-            $convertedString .= $numbersChars[$char] ?? $char;
-        }
-
-        return $convertedString;
     }
 }
