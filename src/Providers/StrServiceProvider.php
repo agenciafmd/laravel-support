@@ -2,9 +2,10 @@
 
 namespace Agenciafmd\Support\Providers;
 
+use Agenciafmd\Support\Helper;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Stringable;
 use Illuminate\Support\Str;
+use Illuminate\Support\Stringable;
 
 class StrServiceProvider extends ServiceProvider
 {
@@ -26,7 +27,7 @@ class StrServiceProvider extends ServiceProvider
         //
     }
 
-    protected function loadStrMacros(): void
+    private function loadStrMacros(): void
     {
         Str::macro('acronym', static function (string $string, string $delimiter = '') {
             if (empty($string)) {
@@ -50,9 +51,47 @@ class StrServiceProvider extends ServiceProvider
 
             return (int)max(1, $minutesToRead);
         });
+
+        Str::macro('localSquish', static function (string $string) {
+            $string = preg_replace('~^[\s﻿]+|[\s﻿]+$~u', '', $string);
+            $string = preg_replace('~(\s|\x{3164})+~u', ' ', $string);
+
+            return trim($string);
+        });
+
+        Str::macro('printable', static function (string $string) {
+            return preg_replace('/[[:^print:]]/', '', $string);
+        });
+
+        Str::macro('numbersToWords', static function (mixed $string, array $dictionary = []) {
+            $dictionary += [
+                0 => 'zero',
+                1 => 'um',
+                2 => 'dois',
+                3 => 'tres',
+                4 => 'quatro',
+                5 => 'cinco',
+                6 => 'seis',
+                7 => 'sete',
+                8 => 'oito',
+                9 => 'nove',
+            ];
+
+            $string = Str::of($string)
+                ->localSquish()
+                ->ascii()
+                ->split('//');
+
+            $convertedString = '';
+            foreach ($string as $char) {
+                $convertedString .= $dictionary[$char] ?? $char;
+            }
+
+            return $convertedString;
+        });
     }
 
-    protected function loadStringableMacros(): void
+    private function loadStringableMacros(): void
     {
         Stringable::macro('acronym', function (string $delimiter = '') {
             return new Stringable (Str::acronym($this->value, $delimiter));
@@ -60,6 +99,22 @@ class StrServiceProvider extends ServiceProvider
 
         Stringable::macro('readDuration', function () {
             return new Stringable (Str::readDuration($this->value));
+        });
+
+        Stringable::macro('sanitizeName', function () {
+            return new Stringable(Helper::sanitizeName($this->value));
+        });
+
+        Stringable::macro('localSquish', function () {
+            return new Stringable(Str::localSquish($this->value));
+        });
+
+        Stringable::macro('printable', function () {
+            return new Stringable(Str::printable($this->value));
+        });
+
+        Stringable::macro('numbersToWords', function (array $dictionary = []) {
+            return new Stringable(Str::numbersToWords($this->value, $dictionary));
         });
     }
 }

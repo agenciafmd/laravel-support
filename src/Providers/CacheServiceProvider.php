@@ -24,7 +24,7 @@ class CacheServiceProvider extends ServiceProvider
      * }
      * * */
 
-    public function boot()
+    public function boot(): void
     {
         Blade::directive('cache', function ($expression) {
             return "<?php if (!\Agenciafmd\Support\Services\CacheService::setUp($expression)) {?>";
@@ -42,7 +42,7 @@ class CacheServiceProvider extends ServiceProvider
         }
     }
 
-    public function register()
+    public function register(): void
     {
         $this->app->singleton(CacheService::class);
     }
