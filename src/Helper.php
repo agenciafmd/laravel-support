@@ -21,7 +21,7 @@ class Helper
     {
         $string = Helper::onlyNumbers($string);
 
-        if (! $string) {
+        if (!$string) {
             return '';
         }
 
@@ -81,7 +81,7 @@ class Helper
      */
     public static function sanitizePhone($phone): ?string
     {
-        if (! $phone) {
+        if (!$phone) {
             return null;
         }
 
@@ -106,7 +106,7 @@ class Helper
      */
     public static function sanitizeCpf($cpf): ?string
     {
-        if (! $cpf) {
+        if (!$cpf) {
             return null;
         }
 
@@ -128,7 +128,7 @@ class Helper
      */
     public static function sanitizeCnpj($cnpj): ?string
     {
-        if (! $cnpj) {
+        if (!$cnpj) {
             return null;
         }
 
@@ -150,7 +150,7 @@ class Helper
      */
     public static function sanitizeRg($rg): ?string
     {
-        if (! $rg) {
+        if (!$rg) {
             return null;
         }
 
@@ -172,7 +172,7 @@ class Helper
      */
     public static function sanitizeEmail($email): ?string
     {
-        if (! $email) {
+        if (!$email) {
             return null;
         }
 
@@ -214,7 +214,7 @@ class Helper
      */
     public static function sanitizePostalCode($postalCode): ?string
     {
-        if (! $postalCode) {
+        if (!$postalCode) {
             return null;
         }
 
@@ -233,7 +233,7 @@ class Helper
     {
         $schedule = trim($schedule);
 
-        if (! $schedule) {
+        if (!$schedule) {
             return null;
         }
 
@@ -241,7 +241,7 @@ class Helper
             return null;
         }
 
-        if (! Str::contains($schedule, ':')) {
+        if (!Str::contains($schedule, ':')) {
             return null;
         }
 
@@ -257,6 +257,51 @@ class Helper
     }
 
     /**
+     * Normaliza o link do youtube para o formato de compartilhar
+     */
+    public static function sanitizeYoutube(mixed $url): ?string
+    {
+        $id = Helper::youtubeId($url);
+
+        if (!$id) {
+            return null;
+        }
+
+        return "https://youtu.be/{$id}";
+    }
+
+    /**
+     * Retorna o id do youtube a partir de qualquer link
+     */
+    public static function youtubeId(mixed $url): ?string
+    {
+        if (!$url) {
+            return null;
+        }
+
+        if (!Str::of($url)
+            ->contains(['youtu.be', 'youtube.com'])) {
+            return null;
+        }
+
+        $id = Str::of($url)
+            ->replace('/www.', '/')
+            ->replace([
+                'https://youtu.be/',
+                'https://youtube.com/watch?v=',
+                'https://youtube.com/embed/',
+            ], '')
+            ->before('?t=')
+            ->before('&t=');
+
+        if (!$id) {
+            return null;
+        }
+
+        return $id;
+    }
+
+    /**
      * Retorna somente caracteres que podem ser visualizados
      *
      * @param string $string
@@ -264,7 +309,7 @@ class Helper
      */
     public static function printable(string $string): ?string
     {
-        if (! $string) {
+        if (!$string) {
             return null;
         }
 
@@ -319,7 +364,7 @@ class Helper
      */
     public static function formatMoney($value, string $currency = 'R$ '): ?string
     {
-        if (! $value) {
+        if (!$value) {
             return null;
         }
 
@@ -335,7 +380,7 @@ class Helper
 
     public static function httpStripQueryParam(string $param, string|null $value = null, string|null $url = null): string
     {
-        if (! $url) {
+        if (!$url) {
             $url = request()->fullUrl();
         }
 
