@@ -218,6 +218,51 @@ class Helper
     }
 
     /**
+     * Normaliza o link do youtube para o formato de compartilhar
+     */
+    public static function sanitizeYoutube(mixed $url): ?string
+    {
+        $id = Helper::youtubeId($url);
+
+        if (!$id) {
+            return null;
+        }
+
+        return "https://youtu.be/{$id}";
+    }
+
+    /**
+     * Retorna o id do youtube a partir de qualquer link
+     */
+    public static function youtubeId(mixed $url): ?string
+    {
+        if (!$url) {
+            return null;
+        }
+
+        if (!Str::of($url)
+            ->contains(['youtu.be', 'youtube.com'])) {
+            return null;
+        }
+
+        $id = Str::of($url)
+            ->replace('/www.', '/')
+            ->replace([
+                'https://youtu.be/',
+                'https://youtube.com/watch?v=',
+                'https://youtube.com/embed/',
+            ], '')
+            ->before('?t=')
+            ->before('&t=');
+
+        if (!$id) {
+            return null;
+        }
+
+        return $id;
+    }
+
+    /**
      * Retorna somente caracteres que podem ser visualizados
      */
     public static function printable(string $string): ?string
