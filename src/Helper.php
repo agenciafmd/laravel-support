@@ -146,7 +146,7 @@ class Helper
             return null;
         }
 
-        $email = ASCII::to_ascii((string)$email, 'en');
+        $email = ASCII::to_ascii((string) $email, 'en');
 
         $validator = app('validator')->make(['email' => $email], ['email' => 'email:rfc,dns']);
         if ($validator->fails()) {

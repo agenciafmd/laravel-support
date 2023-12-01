@@ -49,7 +49,7 @@ class StrServiceProvider extends ServiceProvider
             $totalWords = str_word_count(implode(' ', $text));
             $minutesToRead = round($totalWords / 200);
 
-            return (int)max(1, $minutesToRead);
+            return (int) max(1, $minutesToRead);
         });
 
         Str::macro('localSquish', static function (string $string) {
