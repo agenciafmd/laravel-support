@@ -77,7 +77,7 @@ class StrServiceProvider extends ServiceProvider
                 9 => 'nove',
             ];
 
-            $string = Str::of($string)
+            $string = str($string)
                 ->localSquish()
                 ->ascii()
                 ->split('//');

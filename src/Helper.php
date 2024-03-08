@@ -153,7 +153,7 @@ class Helper
             return null;
         }
 
-        return Str::of($email)
+        return str($email)
             ->lower()
             ->trim();
     }
@@ -166,7 +166,7 @@ class Helper
         $search = ["De ", "Do ", "Dos ", "Da ", "Das "];
         $replace = ["de ", "do ", "dos ", "da ", "das "];
 
-        $name = ucwords(Str::of($name)
+        $name = ucwords(str($name)
             ->lower()
             ->trim());
 
@@ -240,12 +240,12 @@ class Helper
             return null;
         }
 
-        if (!Str::of($url)
+        if (!str($url)
             ->contains(['youtu.be', 'youtube.com'])) {
             return null;
         }
 
-        $id = Str::of($url)
+        $id = str($url)
             ->replace('/www.', '/')
             ->replace([
                 'https://youtu.be/',
@@ -370,7 +370,7 @@ class Helper
             '9' => 'nove',
         ];
 
-        $name = Str::of($value)
+        $name = str($value)
             ->localSquish()
             ->ascii()
             ->split('//');
