@@ -27,7 +27,7 @@ class CacheServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Blade::directive('cache', function ($expression) {
-            return "<?php if (!\Agenciafmd\Support\Services\CacheService::setUp($expression)) {?>";
+            return "<?php if (!\Agenciafmd\Support\Services\CacheService::setUp({$expression})) {?>";
         });
         Blade::directive('endcache', function () {
             return "<?php } echo \Agenciafmd\Support\Services\CacheService::tearDown() ?>";

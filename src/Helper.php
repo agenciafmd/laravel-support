@@ -52,7 +52,7 @@ class Helper
         $length = strlen($string);
 
         for ($i = 0; $i < $length; $i++) {
-            $mask[strpos($mask, "#")] = $string[$i];
+            $mask[strpos($mask, '#')] = $string[$i];
         }
 
         return $mask;
@@ -163,8 +163,8 @@ class Helper
      */
     public static function sanitizeName(string $name): string
     {
-        $search = ["De ", "Do ", "Dos ", "Da ", "Das "];
-        $replace = ["de ", "do ", "dos ", "da ", "das "];
+        $search = ['De ', 'Do ', 'Dos ', 'Da ', 'Das '];
+        $replace = ['de ', 'do ', 'dos ', 'da ', 'das '];
 
         $name = ucwords(str($name)
             ->lower()
@@ -294,8 +294,11 @@ class Helper
     /**
      * Formata o retorno de falha para json normalizado
      */
-    public static function error(array $data = [], string $message = 'Item não encontrado', int $code = 404): JsonResponse
-    {
+    public static function error(
+        array $data = [],
+        string $message = 'Item não encontrado',
+        int $code = 404
+    ): JsonResponse {
         return response()->json([
             'code' => $code,
             'message' => $message,

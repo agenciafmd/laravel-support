@@ -94,11 +94,11 @@ class StrServiceProvider extends ServiceProvider
     private function loadStringableMacros(): void
     {
         Stringable::macro('acronym', function (string $delimiter = '') {
-            return new Stringable (Str::acronym($this->value, $delimiter));
+            return new Stringable(Str::acronym($this->value, $delimiter));
         });
 
         Stringable::macro('readDuration', function () {
-            return new Stringable (Str::readDuration($this->value));
+            return new Stringable(Str::readDuration($this->value));
         });
 
         Stringable::macro('sanitizeName', function () {
