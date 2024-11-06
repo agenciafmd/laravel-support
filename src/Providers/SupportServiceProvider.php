@@ -19,6 +19,7 @@ class SupportServiceProvider extends ServiceProvider
     private function providers(): void
     {
         $this->app->register(CacheServiceProvider::class);
+        $this->app->register(EloquentServiceProvider::class);
         $this->app->register(RequestServiceProvider::class);
         $this->app->register(StrServiceProvider::class);
     }
