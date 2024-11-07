@@ -47,5 +47,15 @@ class EloquentServiceProvider extends ServiceProvider
                     ])
                     ->toArray();
             });
+
+        Builder::macro('toSimpleSelectOptions', function () {
+            return collect($this->toSelectOptions())
+                ->mapWithKeys(function ($item) {
+                    return [
+                        $item['value'] => $item['label'],
+                    ];
+                })
+                ->toArray();
+        });
     }
 }
