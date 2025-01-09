@@ -33,7 +33,7 @@ class CacheServiceProvider extends ServiceProvider
             return "<?php } echo \Agenciafmd\Support\Services\CacheService::tearDown() ?>";
         });
 
-        if ($this->app->environment(['local']) && !$this->app->runningInConsole()) {
+        if ($this->app->environment(['local']) && (config('cache.default') === 'redis') && !$this->app->runningInConsole()) {
             $cache = app(CacheRepository::class);
             $cache->tags('views')
                 ->flush();
