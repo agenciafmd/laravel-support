@@ -5,7 +5,7 @@ namespace Agenciafmd\Support\Rules;
 use Agenciafmd\Support\Helper;
 use Illuminate\Contracts\Validation\Rule;
 
-/* TODO: refac https://laravel.com/docs/11.x/validation#using-rule-objects*/
+/* TODO: refac https://laravel.com/docs/11.x/validation#using-rule-objects */
 
 class YoutubeUrl implements Rule
 {

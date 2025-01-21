@@ -5,7 +5,7 @@ namespace Agenciafmd\Support\Rules;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 
-/* TODO: refac https://laravel.com/docs/11.x/validation#using-rule-objects*/
+/* TODO: refac https://laravel.com/docs/11.x/validation#using-rule-objects */
 
 class CommaSeparatedEmails implements Rule
 {
