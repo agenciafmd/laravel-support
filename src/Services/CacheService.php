@@ -47,6 +47,7 @@ class CacheService
     {
         $key = static::normalizeCacheKey($key);
         $cache = app(Cache::class);
+
         return $cache
             ->tags('views')
             ->rememberForever($key, function () use ($fragment) {
@@ -58,6 +59,7 @@ class CacheService
     {
         $key = static::normalizeCacheKey($key);
         $cache = app(Cache::class);
+
         return $cache
             ->tags('views')
             ->has($key);

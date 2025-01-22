@@ -10,12 +10,7 @@ use voku\helper\ASCII;
 class Helper
 {
     /**
-     * Ofusca o numero de telefone ignorando as posições passadas
-     *
-     * @param string $string
-     * @param int $initialChars
-     * @param int $finalChars
-     * @return string
+     * Ofusca o número de telefone ignorando as posições passadas
      */
     public static function secretPhone(string $string, int $initialChars = 4, int $finalChars = 2): string
     {
@@ -33,10 +28,7 @@ class Helper
     }
 
     /**
-     * Retorna somente os numeros da string
-     *
-     * @param string $string
-     * @return string
+     * Retorna somente os números da string
      */
     public static function onlyNumbers(string $string): string
     {
@@ -45,9 +37,6 @@ class Helper
 
     /**
      * Retorna somente os números e letras da string
-     *
-     * @param string $string
-     * @return string
      */
     public static function onlyAlphanumeric(string $string): string
     {
@@ -56,10 +45,6 @@ class Helper
 
     /**
      * Formata a string a partir da mascara
-     *
-     * @param string $string
-     * @param string $mask
-     * @return string
      */
     public static function mask(string $string, string $mask): string
     {
@@ -67,7 +52,7 @@ class Helper
         $length = strlen($string);
 
         for ($i = 0; $i < $length; $i++) {
-            $mask[strpos($mask, "#")] = $string[$i];
+            $mask[strpos($mask, '#')] = $string[$i];
         }
 
         return $mask;
@@ -75,11 +60,8 @@ class Helper
 
     /**
      * Checa se o telefone é valido e retorna o mesmo formatado
-     *
-     * @param mixed $phone
-     * @return string | null
      */
-    public static function sanitizePhone($phone): ?string
+    public static function sanitizePhone(mixed $phone): ?string
     {
         if (!$phone) {
             return null;
@@ -100,11 +82,8 @@ class Helper
 
     /**
      * Checa se o cpf é valido e retorna o mesmo formatado
-     *
-     * @param mixed $cpf
-     * @return string | null
      */
-    public static function sanitizeCpf($cpf): ?string
+    public static function sanitizeCpf(mixed $cpf): ?string
     {
         if (!$cpf) {
             return null;
@@ -122,11 +101,8 @@ class Helper
 
     /**
      * Checa se o cnpj é valido e retorna o mesmo formatado
-     *
-     * @param mixed $cnpj
-     * @return string | null
      */
-    public static function sanitizeCnpj($cnpj): ?string
+    public static function sanitizeCnpj(mixed $cnpj): ?string
     {
         if (!$cnpj) {
             return null;
@@ -144,11 +120,8 @@ class Helper
 
     /**
      * Normaliza o RG e retorna o mesmo formatado
-     *
-     * @param mixed $rg
-     * @return string | null
      */
-    public static function sanitizeRg($rg): ?string
+    public static function sanitizeRg(mixed $rg): ?string
     {
         if (!$rg) {
             return null;
@@ -166,40 +139,34 @@ class Helper
 
     /**
      * Checa se o email é valido e retorna o mesmo
-     *
-     * @param mixed $email
-     * @return string | null
      */
-    public static function sanitizeEmail($email): ?string
+    public static function sanitizeEmail(mixed $email): ?string
     {
         if (!$email) {
             return null;
         }
 
-        $email = ASCII::to_ascii((string)$email, 'en');
+        $email = ASCII::to_ascii((string) $email, 'en');
 
         $validator = app('validator')->make(['email' => $email], ['email' => 'email:rfc,dns']);
         if ($validator->fails()) {
             return null;
         }
 
-        return Str::of($email)
+        return str($email)
             ->lower()
             ->trim();
     }
 
     /**
      * Normaliza os nomes de pessoas de UPPER_CASE para ucfirst
-     *
-     * @param string $name
-     * @return string
      */
     public static function sanitizeName(string $name): string
     {
-        $search = ["De ", "Do ", "Dos ", "Da ", "Das "];
-        $replace = ["de ", "do ", "dos ", "da ", "das "];
+        $search = ['De ', 'Do ', 'Dos ', 'Da ', 'Das '];
+        $replace = ['de ', 'do ', 'dos ', 'da ', 'das '];
 
-        $name = ucwords(Str::of($name)
+        $name = ucwords(str($name)
             ->lower()
             ->trim());
 
@@ -208,11 +175,8 @@ class Helper
 
     /**
      * Checa se o CEP é valido e retorna o mesmo formatado
-     *
-     * @param mixed $postalCode
-     * @return string | null
      */
-    public static function sanitizePostalCode($postalCode): ?string
+    public static function sanitizePostalCode(mixed $postalCode): ?string
     {
         if (!$postalCode) {
             return null;
@@ -225,11 +189,8 @@ class Helper
 
     /**
      * Checa se o horário é valido e retorna o mesmo formatado
-     *
-     * @param mixed $schedule
-     * @return string | null
      */
-    public static function sanitizeSchedule($schedule): ?string
+    public static function sanitizeSchedule(mixed $schedule): ?string
     {
         $schedule = trim($schedule);
 
@@ -279,12 +240,12 @@ class Helper
             return null;
         }
 
-        if (!Str::of($url)
+        if (!str($url)
             ->contains(['youtu.be', 'youtube.com'])) {
             return null;
         }
 
-        $id = Str::of($url)
+        $id = str($url)
             ->replace('/www.', '/')
             ->replace([
                 'https://youtu.be/',
@@ -303,9 +264,6 @@ class Helper
 
     /**
      * Retorna somente caracteres que podem ser visualizados
-     *
-     * @param string $string
-     * @return string | null
      */
     public static function printable(string $string): ?string
     {
@@ -318,13 +276,8 @@ class Helper
 
     /**
      * Formata o retorno de sucesso para json normalizado
-     *
-     * @param mixed $data
-     * @param string $message
-     * @param int $code
-     * @return JsonResponse
      */
-    public static function success($data, string $message = 'Item encontrado', int $code = 200): JsonResponse
+    public static function success(mixed $data, string $message = 'Item encontrado', int $code = 200): JsonResponse
     {
         if ($data instanceof Collection) {
             $count = $data->count();
@@ -340,14 +293,12 @@ class Helper
 
     /**
      * Formata o retorno de falha para json normalizado
-     *
-     * @param array $data
-     * @param string $message
-     * @param int $code
-     * @return JsonResponse
      */
-    public static function error(array $data = [], string $message = 'Item não encontrado', int $code = 404): JsonResponse
-    {
+    public static function error(
+        array $data = [],
+        string $message = 'Item não encontrado',
+        int $code = 404
+    ): JsonResponse {
         return response()->json([
             'code' => $code,
             'message' => $message,
@@ -357,12 +308,8 @@ class Helper
 
     /**
      * Formata inteiro para moeda
-     *
-     * @param mixed $value
-     * @param string $currency
-     * @return string | null
      */
-    public static function formatMoney($value, string $currency = 'R$ '): ?string
+    public static function formatMoney(mixed $value, string $currency = 'R$ '): ?string
     {
         if (!$value) {
             return null;
@@ -378,7 +325,10 @@ class Helper
         return "{$currency}{$body},{$decimal}";
     }
 
-    public static function httpStripQueryParam(string $param, string|null $value = null, string|null $url = null): string
+    /**
+     * Remove o parâmetro, com ou sem valor da query string quando houver
+     */
+    public static function httpStripQueryParam(string $param, ?string $value = null, ?string $url = null): string
     {
         if (!$url) {
             $url = request()->fullUrl();
@@ -392,7 +342,7 @@ class Helper
             parse_str($pieces['query'], $query);
 
             if (is_array($query[$param]) && $value) {
-                if (($key = array_search($value, $query[$param])) !== false) {
+                if (($key = array_search($value, $query[$param], true)) !== false) {
                     unset($query[$param][$key]);
                 }
             } else {
@@ -406,12 +356,8 @@ class Helper
     }
 
     /**
-     * Converte os numeros de uma string para palavras
-     *
-     * @param mixed $value
-     * @return string
+     * Converte os números de uma string para palavras
      */
-
     public static function numbersToWords(mixed $value): string
     {
         $numbersChars = [
@@ -427,7 +373,7 @@ class Helper
             '9' => 'nove',
         ];
 
-        $name = Str::of($value)
+        $name = str($value)
             ->localSquish()
             ->ascii()
             ->split('//');

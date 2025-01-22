@@ -24,10 +24,10 @@ class CacheServiceProvider extends ServiceProvider
      * }
      * * */
 
-    public function boot()
+    public function boot(): void
     {
         Blade::directive('cache', function ($expression) {
-            return "<?php if (!\Agenciafmd\Support\Services\CacheService::setUp($expression)) {?>";
+            return "<?php if (!\Agenciafmd\Support\Services\CacheService::setUp({$expression})) {?>";
         });
         Blade::directive('endcache', function () {
             return "<?php } echo \Agenciafmd\Support\Services\CacheService::tearDown() ?>";
@@ -35,12 +35,14 @@ class CacheServiceProvider extends ServiceProvider
 
         if ($this->app->environment(['local']) && (config('cache.default') === 'redis') && !$this->app->runningInConsole()) {
             $cache = app(CacheRepository::class);
-            $cache->tags('views')
-                ->flush();
+            if ($cache->supportsTags()) {
+                $cache->tags('views')
+                    ->flush();
+            }
         }
     }
 
-    public function register()
+    public function register(): void
     {
         $this->app->singleton(CacheService::class);
     }
