@@ -10,7 +10,7 @@ class SupportServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
-        $this->providers();
+        $this->bootProviders();
         $this->loadLivewireSynth();
     }
 
@@ -19,7 +19,7 @@ class SupportServiceProvider extends ServiceProvider
         //
     }
 
-    private function providers(): void
+    private function bootProviders(): void
     {
         $this->app->register(CacheServiceProvider::class);
         $this->app->register(EloquentServiceProvider::class);
