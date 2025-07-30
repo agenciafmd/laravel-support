@@ -251,7 +251,9 @@ class Helper
                 'https://youtu.be/',
                 'https://youtube.com/watch?v=',
                 'https://youtube.com/embed/',
+                'https://youtube.com/shorts/',
             ], '')
+            ->before('?si=')
             ->before('?t=')
             ->before('&t=');
 
