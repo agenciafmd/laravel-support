@@ -399,4 +399,13 @@ class Helper
 
         return ((0.2126 * hexdec($r) / 255) + (0.7152 * hexdec($g) / 255) + (0.0722 * hexdec($b) / 255) >= 0.5) ? $dark : $light;
     }
+
+    public static function hexToRgb(string $rgb): string
+    {
+        [$r, $g, $b] = str($rgb)
+            ->replace('#', '')
+            ->split(2);
+
+        return hexdec($r) . ', ' . hexdec($g) . ', ' . hexdec($b);
+    }
 }
