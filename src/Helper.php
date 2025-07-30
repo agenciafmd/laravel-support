@@ -218,7 +218,7 @@ class Helper
     }
 
     /**
-     * Normaliza o link do youtube para o formato de compartilhar
+     * Normaliza o link do YouTube para o formato de compartilhar
      */
     public static function sanitizeYoutube(mixed $url): ?string
     {
@@ -386,5 +386,17 @@ class Helper
         }
 
         return $convertedString;
+    }
+
+    /**
+     * Retorna a cor do texto baseado no RGB passado
+     */
+    public static function negativeColor(string $rgb, string $dark = '#003D4C', string $light = '#FFFFFF'): string
+    {
+        [$r, $g, $b] = str($rgb)
+            ->replace('#', '')
+            ->split(2);
+
+        return ((0.2126 * hexdec($r) / 255) + (0.7152 * hexdec($g) / 255) + (0.0722 * hexdec($b) / 255) >= 0.5) ? $dark : $light;
     }
 }
