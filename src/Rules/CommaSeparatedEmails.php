@@ -1,39 +1,39 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Agenciafmd\Support\Rules;
 
-use Illuminate\Contracts\Validation\Rule;
+use Closure;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Facades\Validator;
 
-/* TODO: refac https://laravel.com/docs/11.x/validation#using-rule-objects */
-
-class CommaSeparatedEmails implements Rule
+final class CommaSeparatedEmails implements ValidationRule
 {
-    public function passes(mixed $attribute, mixed $value): bool
+    private const EMAIL_RULES = [
+        'email' => [
+            'required',
+            'email:rfc,dns',
+        ],
+    ];
+
+    public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $value = str_replace([' ', ';'], ',', $value);
-        $value = array_map('trim', explode(',', $value));
-        $rules = [
-            'email' => [
-                'required',
-                'email:rfc,dns',
-            ],
-        ];
-        foreach ($value as $email) {
-            $data = [
-                'email' => $email,
-            ];
-            $validator = Validator::make($data, $rules);
+        $emails = $this->parseEmails($value);
+
+        foreach ($emails as $email) {
+            $validator = Validator::make(['email' => $email], self::EMAIL_RULES);
+
             if ($validator->fails()) {
-                return false;
+                $fail(__('validation.email'));
             }
         }
-
-        return true;
     }
 
-    public function message(): string
+    private function parseEmails(string $value): array
     {
-        return __('validation.email');
+        $normalized = str_replace([' ', ';'], ',', $value);
+
+        return array_filter(array_map('trim', explode(',', $normalized)));
     }
 }
