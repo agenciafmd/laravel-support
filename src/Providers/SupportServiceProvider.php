@@ -22,5 +22,6 @@ class SupportServiceProvider extends ServiceProvider
         $this->app->register(EloquentServiceProvider::class);
         $this->app->register(RequestServiceProvider::class);
         $this->app->register(StrServiceProvider::class);
+        $this->app->register(FakerServiceProvider::class);
     }
 }
