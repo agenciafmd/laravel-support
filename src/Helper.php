@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Agenciafmd\Support;
 
 use Illuminate\Http\JsonResponse;
@@ -7,24 +9,24 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use voku\helper\ASCII;
 
-class Helper
+final class Helper
 {
     /**
      * Ofusca o número de telefone ignorando as posições passadas
      */
     public static function secretPhone(string $string, int $initialChars = 4, int $finalChars = 2): string
     {
-        $string = Helper::onlyNumbers($string);
+        $string = self::onlyNumbers($string);
 
-        if (!$string) {
+        if (! $string) {
             return '';
         }
 
-        $initial = substr($string, 0, $initialChars);
-        $final = substr($string, -1 * $finalChars);
-        $length = strlen($string) - $finalChars;
+        $initial = mb_substr($string, 0, $initialChars);
+        $final = mb_substr($string, -1 * $finalChars);
+        $length = mb_strlen($string) - $finalChars;
 
-        return Helper::mask(str_pad($initial, $length, '*') . $final, '(##) #####-####');
+        return self::mask(mb_str_pad($initial, $length, '*') . $final, '(##) #####-####');
     }
 
     /**
@@ -49,10 +51,10 @@ class Helper
     public static function mask(string $string, string $mask): string
     {
         $string = str_replace(' ', '', $string);
-        $length = strlen($string);
+        $length = mb_strlen($string);
 
         for ($i = 0; $i < $length; $i++) {
-            $mask[strpos($mask, '#')] = $string[$i];
+            $mask[mb_strpos($mask, '#')] = $string[$i];
         }
 
         return $mask;
@@ -63,18 +65,18 @@ class Helper
      */
     public static function sanitizePhone(mixed $phone): ?string
     {
-        if (!$phone) {
+        if (! $phone) {
             return null;
         }
 
-        $numericPhone = Helper::onlyNumbers($phone);
+        $numericPhone = self::onlyNumbers($phone);
 
         if (Str::length($numericPhone) === 10) {
-            return Helper::mask($numericPhone, '(##) ####-####');
+            return self::mask($numericPhone, '(##) ####-####');
         }
 
         if (Str::length($numericPhone) === 11) {
-            return Helper::mask($numericPhone, '(##) #####-####');
+            return self::mask($numericPhone, '(##) #####-####');
         }
 
         return null;
@@ -85,7 +87,7 @@ class Helper
      */
     public static function sanitizeCpf(mixed $cpf): ?string
     {
-        if (!$cpf) {
+        if (! $cpf) {
             return null;
         }
 
@@ -94,9 +96,9 @@ class Helper
             return null;
         }
 
-        $cpf = Helper::onlyNumbers($cpf);
+        $cpf = self::onlyNumbers($cpf);
 
-        return Helper::mask($cpf, '###.###.###-##');
+        return self::mask($cpf, '###.###.###-##');
     }
 
     /**
@@ -104,7 +106,7 @@ class Helper
      */
     public static function sanitizeCnpj(mixed $cnpj): ?string
     {
-        if (!$cnpj) {
+        if (! $cnpj) {
             return null;
         }
 
@@ -113,9 +115,9 @@ class Helper
             return null;
         }
 
-        $cnpj = Helper::onlyNumbers($cnpj);
+        $cnpj = self::onlyNumbers($cnpj);
 
-        return Helper::mask($cnpj, '##.###.###/####-##');
+        return self::mask($cnpj, '##.###.###/####-##');
     }
 
     /**
@@ -123,18 +125,21 @@ class Helper
      */
     public static function sanitizeRg(mixed $rg): ?string
     {
-        if (!$rg) {
+        if (! $rg) {
             return null;
         }
 
-        $rg = Helper::onlyAlphanumeric($rg);
+        $rg = self::onlyAlphanumeric($rg);
 
-        $digit = substr($rg, -1);
-        $body = Helper::onlyNumbers(substr($rg, 0, -1));
-        $pieces = str_split(strrev($body), 3);
+        $digit = mb_substr($rg, -1);
+        $body = self::onlyNumbers(mb_substr($rg, 0, -1));
+        $pieces = mb_str_split(strrev($body), 3);
         $body = strrev(implode('.', $pieces));
 
-        return Str::upper("{$body}-{$digit}");
+        return str("{$body}-{$digit}")
+            ->upper()
+            ->trim()
+            ->toString();
     }
 
     /**
@@ -142,7 +147,7 @@ class Helper
      */
     public static function sanitizeEmail(mixed $email): ?string
     {
-        if (!$email) {
+        if (! $email) {
             return null;
         }
 
@@ -155,7 +160,8 @@ class Helper
 
         return str($email)
             ->lower()
-            ->trim();
+            ->trim()
+            ->toString();
     }
 
     /**
@@ -166,9 +172,11 @@ class Helper
         $search = ['De ', 'Do ', 'Dos ', 'Da ', 'Das '];
         $replace = ['de ', 'do ', 'dos ', 'da ', 'das '];
 
-        $name = ucwords(str($name)
+        $name = str($name)
             ->lower()
-            ->trim());
+            ->trim()
+            ->ucwords()
+            ->toString();
 
         return str_replace($search, $replace, $name);
     }
@@ -178,13 +186,13 @@ class Helper
      */
     public static function sanitizePostalCode(mixed $postalCode): ?string
     {
-        if (!$postalCode) {
+        if (! $postalCode) {
             return null;
         }
 
-        $postalCode = Helper::onlyNumbers($postalCode);
+        $postalCode = self::onlyNumbers($postalCode);
 
-        return Helper::mask($postalCode, '#####-###');
+        return self::mask($postalCode, '#####-###');
     }
 
     /**
@@ -192,9 +200,9 @@ class Helper
      */
     public static function sanitizeSchedule(mixed $schedule): ?string
     {
-        $schedule = trim($schedule);
+        $schedule = mb_trim($schedule);
 
-        if (!$schedule) {
+        if (! $schedule) {
             return null;
         }
 
@@ -202,7 +210,7 @@ class Helper
             return null;
         }
 
-        if (!Str::contains($schedule, ':')) {
+        if (! Str::contains($schedule, ':')) {
             return null;
         }
 
@@ -222,9 +230,9 @@ class Helper
      */
     public static function sanitizeYoutube(mixed $url): ?string
     {
-        $id = Helper::youtubeId($url);
+        $id = self::youtubeId($url);
 
-        if (!$id) {
+        if (! $id) {
             return null;
         }
 
@@ -236,11 +244,11 @@ class Helper
      */
     public static function youtubeId(mixed $url): ?string
     {
-        if (!$url) {
+        if (! $url) {
             return null;
         }
 
-        if (!str($url)
+        if (! str($url)
             ->contains(['youtu.be', 'youtube.com'])) {
             return null;
         }
@@ -255,9 +263,11 @@ class Helper
             ], '')
             ->before('?si=')
             ->before('?t=')
-            ->before('&t=');
+            ->before('&t=')
+            ->trim()
+            ->toString();
 
-        if (!$id) {
+        if (! $id) {
             return null;
         }
 
@@ -269,7 +279,7 @@ class Helper
      */
     public static function printable(string $string): ?string
     {
-        if (!$string) {
+        if (! $string) {
             return null;
         }
 
@@ -313,15 +323,15 @@ class Helper
      */
     public static function formatMoney(mixed $value, string $currency = 'R$ '): ?string
     {
-        if (!$value) {
+        if (! $value) {
             return null;
         }
 
-        $value = Helper::onlyNumbers($value);
+        $value = self::onlyNumbers($value);
 
-        $decimal = substr($value, -2);
-        $body = substr($value, 0, -2);
-        $pieces = str_split(strrev($body), 3);
+        $decimal = mb_substr($value, -2);
+        $body = mb_substr($value, 0, -2);
+        $pieces = mb_str_split(strrev($body), 3);
         $body = strrev(implode('.', $pieces));
 
         return "{$currency}{$body},{$decimal}";
@@ -332,7 +342,7 @@ class Helper
      */
     public static function httpStripQueryParam(string $param, ?string $value = null, ?string $url = null): string
     {
-        if (!$url) {
+        if (! $url) {
             $url = request()->fullUrl();
         }
 
@@ -391,21 +401,29 @@ class Helper
     /**
      * Retorna a cor do texto baseado no RGB passado
      */
-    public static function negativeColor(string $rgb, string $dark = '#003D4C', string $light = '#FFFFFF'): string
+    public static function contrastColor(string $hexColor, string $dark = '#003D4C', string $light = '#FFFFFF'): string
     {
-        [$r, $g, $b] = str($rgb)
+        $rgb = str($hexColor)
             ->replace('#', '')
-            ->split(2);
+            ->split(2)
+            ->map(fn ($hex) => hexdec($hex) / 255);
 
-        return ((0.2126 * hexdec($r) / 255) + (0.7152 * hexdec($g) / 255) + (0.0722 * hexdec($b) / 255) >= 0.5) ? $dark : $light;
+        $red = $rgb[0];
+        $green = $rgb[1];
+        $blue = $rgb[2];
+
+        $luminance = (0.2126 * $red) + (0.7152 * $green) + (0.0722 * $blue);
+
+        return ($luminance >= 0.5) ? $dark : $light;
     }
 
-    public static function hexToRgb(string $rgb): string
+    public static function hexToRgb(string $hex): string
     {
-        [$r, $g, $b] = str($rgb)
+        $channels = str($hex)
             ->replace('#', '')
-            ->split(2);
+            ->split(2)
+            ->map(fn (string $color) => hexdec($color));
 
-        return hexdec($r) . ', ' . hexdec($g) . ', ' . hexdec($b);
+        return $channels->implode(', ');
     }
 }
