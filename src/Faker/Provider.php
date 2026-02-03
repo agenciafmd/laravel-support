@@ -76,6 +76,15 @@ final class Provider extends Base
         return fake()->file($sourceDir);
     }
 
+    public function localFile($sourceDir = null): string
+    {
+        if (! $sourceDir) {
+            $sourceDir = __DIR__ . "/../../resources/faker/pdfs/";
+        }
+
+        return fake()->file($sourceDir);
+    }
+
     public function tags($max = 3, $allowed = []): array
     {
         if (! count($allowed)) {
