@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Agenciafmd\Support\Providers;
 
 use Agenciafmd\Support\Services\CacheService;
@@ -7,7 +9,7 @@ use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
-class CacheServiceProvider extends ServiceProvider
+final class CacheServiceProvider extends ServiceProvider
 {
     /*
      * Solução baseada no comentário do @wtoalabi
@@ -33,7 +35,7 @@ class CacheServiceProvider extends ServiceProvider
             return "<?php } echo \Agenciafmd\Support\Services\CacheService::tearDown() ?>";
         });
 
-        if ($this->app->environment(['local']) && (config('cache.default') === 'redis') && !$this->app->runningInConsole()) {
+        if ($this->app->environment(['local']) && (config('cache.default') === 'redis') && ! $this->app->runningInConsole()) {
             $cache = app(CacheRepository::class);
             if ($cache->supportsTags()) {
                 $cache->tags('views')

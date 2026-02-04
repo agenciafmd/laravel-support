@@ -1,32 +1,56 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Agenciafmd\Support\Services;
 
 use Exception;
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Illuminate\Support\Collection;
 
-class CacheService
+final class CacheService
 {
     private static array $keys = [];
 
     public static function setUp($model)
     {
         ob_start();
-        static::$keys[] = $key = self::normalizeKey($model);
+        self::$keys[] = $key = self::normalizeKey($model);
 
-        return static::has($key);
+        return self::has($key);
     }
 
     public static function tearDown()
     {
-        $key = array_pop(static::$keys);
+        $key = array_pop(self::$keys);
         $fragment = ob_get_clean();
 
-        return static::put($key, $fragment);
+        return self::put($key, $fragment);
     }
 
-    protected static function normalizeKey($item, $key = null)
+    public static function put($key, $fragment)
+    {
+        $key = self::normalizeCacheKey($key);
+        $cache = app(Cache::class);
+
+        return $cache
+            ->tags('views')
+            ->rememberForever($key, function () use ($fragment) {
+                return $fragment;
+            });
+    }
+
+    public static function has($key)
+    {
+        $key = self::normalizeCacheKey($key);
+        $cache = app(Cache::class);
+
+        return $cache
+            ->tags('views')
+            ->has($key);
+    }
+
+    private static function normalizeKey($item, $key = null)
     {
         if (is_string($item) || is_string($key)) {
             return is_string($item) ? $item : $key;
@@ -41,28 +65,6 @@ class CacheService
         }
 
         return new Exception('Could not determine an appropriate cache key.');
-    }
-
-    public static function put($key, $fragment)
-    {
-        $key = static::normalizeCacheKey($key);
-        $cache = app(Cache::class);
-
-        return $cache
-            ->tags('views')
-            ->rememberForever($key, function () use ($fragment) {
-                return $fragment;
-            });
-    }
-
-    public static function has($key)
-    {
-        $key = static::normalizeCacheKey($key);
-        $cache = app(Cache::class);
-
-        return $cache
-            ->tags('views')
-            ->has($key);
     }
 
     private static function normalizeCacheKey($key)

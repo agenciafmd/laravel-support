@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Agenciafmd\Support\Providers;
 
 use Agenciafmd\Support\Helper;
@@ -7,7 +9,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Illuminate\Support\Stringable;
 
-class StrServiceProvider extends ServiceProvider
+final class StrServiceProvider extends ServiceProvider
 {
     /*
      * Source:
@@ -36,7 +38,7 @@ class StrServiceProvider extends ServiceProvider
 
             $acronym = '';
             foreach (preg_split('/[^\p{L}]+/u', $string) as $word) {
-                if (!empty($word)) {
+                if (! empty($word)) {
                     $first_letter = mb_substr($word, 0, 1);
                     $acronym .= $first_letter . $delimiter;
                 }
@@ -56,7 +58,7 @@ class StrServiceProvider extends ServiceProvider
             $string = preg_replace('~^[\s﻿]+|[\s﻿]+$~u', '', $string);
             $string = preg_replace('~(\s|\x{3164})+~u', ' ', $string);
 
-            return trim($string);
+            return mb_trim($string);
         });
 
         Str::macro('printable', static function (string $string) {

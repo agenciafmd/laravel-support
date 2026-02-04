@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Agenciafmd\Support\Providers;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\ServiceProvider;
 
-class EloquentServiceProvider extends ServiceProvider
+final class EloquentServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
@@ -35,7 +37,7 @@ class EloquentServiceProvider extends ServiceProvider
                         ];
 
                         if ($disabled) {
-                            $option['disabled'] = !$item->is_active;
+                            $option['disabled'] = ! $item->is_active;
                         }
 
                         return $option;

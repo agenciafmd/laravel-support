@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Agenciafmd\Support\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
-class SupportServiceProvider extends ServiceProvider
+final class SupportServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {

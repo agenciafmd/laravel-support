@@ -79,7 +79,7 @@ final class Provider extends Base
     public function localFile($sourceDir = null): string
     {
         if (! $sourceDir) {
-            $sourceDir = __DIR__ . "/../../resources/faker/pdfs/";
+            $sourceDir = __DIR__ . '/../../resources/faker/pdfs/';
         }
 
         return fake()->file($sourceDir);
@@ -117,7 +117,7 @@ final class Provider extends Base
     public function htmlText(): string
     {
         $blocks[] = $this->htmlParagraphs(fake()->numberBetween(3, 6));
-        $blocks[] = sprintf("<p><img src=\"%s\" width=\"800\" style=\"width\: 800; height\: 600;\" height=\"600\" data-id=\"%s\"></p>", "https://picsum.photos/800/600?random=" . random_int(10000, 15999), fake()->uuid());
+        $blocks[] = sprintf("<p><img src=\"%s\" width=\"800\" style=\"width\: 800; height\: 600;\" height=\"600\" data-id=\"%s\"></p>", 'https://picsum.photos/800/600?random=' . random_int(10000, 15999), fake()->uuid());
         $blocks[] = sprintf('<blockquote>%s</blockquote>', $this->htmlParagraphs(fake()->numberBetween(1, 3)));
         $blocks[] = sprintf('<details><summary>%s</summary><div data-type="detailsContent">%s</div></details>', fake()->sentence(3), $this->htmlParagraphs(fake()->numberBetween(1, 3)));
 

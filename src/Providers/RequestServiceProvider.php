@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Agenciafmd\Support\Providers;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\ServiceProvider;
 
-class RequestServiceProvider extends ServiceProvider
+final class RequestServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
