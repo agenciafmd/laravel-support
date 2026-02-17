@@ -426,4 +426,30 @@ final class Helper
 
         return $channels->implode(', ');
     }
+
+    public static function statesCities(): Collection
+    {
+        return cache()->rememberForever('statesCities', function () {
+            return collect(json_decode(file_get_contents(public_path('json/estados-cidades.json'))));
+        });
+    }
+
+    public static function states(): array
+    {
+        return collect(self::statesCities())
+            ->flatMap(fn($state) => [$state->sigla => $state->nome])
+            ->toArray();
+    }
+
+    public static function cities(string $uf): array
+    {
+        return collect(self::statesCities())
+            ->filter(function ($state) use ($uf) {
+                return $state->sigla === $uf;
+            })
+            ->flatMap(fn($state) => collect($state->cidades)
+                ->mapWithKeys(fn($city) => [$city => $city])
+            )
+            ->toArray();
+    }
 }
