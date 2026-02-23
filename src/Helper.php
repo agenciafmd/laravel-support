@@ -437,7 +437,7 @@ final class Helper
     public static function states(): array
     {
         return collect(self::statesCities())
-            ->flatMap(fn($state) => [$state->sigla => $state->nome])
+            ->flatMap(fn ($state) => [$state->sigla => $state->nome])
             ->toArray();
     }
 
@@ -447,8 +447,8 @@ final class Helper
             ->filter(function ($state) use ($uf) {
                 return $state->sigla === $uf;
             })
-            ->flatMap(fn($state) => collect($state->cidades)
-                ->mapWithKeys(fn($city) => [$city => $city])
+            ->flatMap(fn ($state) => collect($state->cidades)
+                ->mapWithKeys(fn ($city) => [$city => $city])
             )
             ->toArray();
     }
