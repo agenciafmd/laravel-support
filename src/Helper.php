@@ -18,7 +18,7 @@ final class Helper
     {
         $string = self::onlyNumbers($string);
 
-        if (! $string) {
+        if (!$string) {
             return '';
         }
 
@@ -65,7 +65,7 @@ final class Helper
      */
     public static function sanitizePhone(mixed $phone): ?string
     {
-        if (! $phone) {
+        if (!$phone) {
             return null;
         }
 
@@ -87,7 +87,7 @@ final class Helper
      */
     public static function sanitizeCpf(mixed $cpf): ?string
     {
-        if (! $cpf) {
+        if (!$cpf) {
             return null;
         }
 
@@ -106,7 +106,7 @@ final class Helper
      */
     public static function sanitizeCnpj(mixed $cnpj): ?string
     {
-        if (! $cnpj) {
+        if (!$cnpj) {
             return null;
         }
 
@@ -125,7 +125,7 @@ final class Helper
      */
     public static function sanitizeRg(mixed $rg): ?string
     {
-        if (! $rg) {
+        if (!$rg) {
             return null;
         }
 
@@ -147,7 +147,7 @@ final class Helper
      */
     public static function sanitizeEmail(mixed $email): ?string
     {
-        if (! $email) {
+        if (!$email) {
             return null;
         }
 
@@ -186,7 +186,7 @@ final class Helper
      */
     public static function sanitizePostalCode(mixed $postalCode): ?string
     {
-        if (! $postalCode) {
+        if (!$postalCode) {
             return null;
         }
 
@@ -202,7 +202,7 @@ final class Helper
     {
         $schedule = mb_trim($schedule);
 
-        if (! $schedule) {
+        if (!$schedule) {
             return null;
         }
 
@@ -210,7 +210,7 @@ final class Helper
             return null;
         }
 
-        if (! Str::contains($schedule, ':')) {
+        if (!Str::contains($schedule, ':')) {
             return null;
         }
 
@@ -232,7 +232,7 @@ final class Helper
     {
         $id = self::youtubeId($url);
 
-        if (! $id) {
+        if (!$id) {
             return null;
         }
 
@@ -244,11 +244,11 @@ final class Helper
      */
     public static function youtubeId(mixed $url): ?string
     {
-        if (! $url) {
+        if (!$url) {
             return null;
         }
 
-        if (! str($url)
+        if (!str($url)
             ->contains(['youtu.be', 'youtube.com'])) {
             return null;
         }
@@ -267,7 +267,7 @@ final class Helper
             ->trim()
             ->toString();
 
-        if (! $id) {
+        if (!$id) {
             return null;
         }
 
@@ -279,7 +279,7 @@ final class Helper
      */
     public static function printable(string $string): ?string
     {
-        if (! $string) {
+        if (!$string) {
             return null;
         }
 
@@ -310,7 +310,8 @@ final class Helper
         array $data = [],
         string $message = 'Item não encontrado',
         int $code = 404
-    ): JsonResponse {
+    ): JsonResponse
+    {
         return response()->json([
             'code' => $code,
             'message' => $message,
@@ -323,7 +324,7 @@ final class Helper
      */
     public static function formatMoney(mixed $value, string $currency = 'R$ '): ?string
     {
-        if (! $value) {
+        if (!$value) {
             return null;
         }
 
@@ -342,7 +343,7 @@ final class Helper
      */
     public static function httpStripQueryParam(string $param, ?string $value = null, ?string $url = null): string
     {
-        if (! $url) {
+        if (!$url) {
             $url = request()->fullUrl();
         }
 
@@ -452,4 +453,27 @@ final class Helper
             )
             ->toArray();
     }
+
+    public static function getContentAndExtensionFromBase64File(string $string): array
+    {
+        $content = str($string)
+            ->after('base64,')
+            ->toString();
+
+        $extension = 'jpg';
+        if (str($string)
+            ->startsWith('data:image')) {
+            $extension = str($string)
+                ->before(';')
+                ->after('/')
+                ->lower()
+                ->toString();
+        }
+
+        return [
+            base64_decode($content),
+            $extension,
+        ];
+    }
+
 }
