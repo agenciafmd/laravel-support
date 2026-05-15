@@ -456,6 +456,7 @@ final class Helper
 
     public static function getContentAndExtensionFromBase64File(string $string): array
     {
+        $string = str_replace(':base64', ';base64', $string);
         $content = str($string)
             ->after('base64,')
             ->toString();
