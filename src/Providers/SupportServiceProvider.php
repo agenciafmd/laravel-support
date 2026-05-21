@@ -21,6 +21,7 @@ final class SupportServiceProvider extends ServiceProvider
     private function bootProviders(): void
     {
         $this->app->register(CacheServiceProvider::class);
+        $this->app->register(BladeServiceProvider::class);
         $this->app->register(EloquentServiceProvider::class);
         $this->app->register(RequestServiceProvider::class);
         $this->app->register(StrServiceProvider::class);
