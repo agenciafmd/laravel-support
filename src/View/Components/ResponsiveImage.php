@@ -15,8 +15,7 @@ final class ResponsiveImage extends Component
     public function __construct(
         public ?string $src,
         public int $quality = 80,
-    )
-    {
+    ) {
         $this->image = $this->generate($src);
     }
 
@@ -31,9 +30,8 @@ final class ResponsiveImage extends Component
                         'class' => 'img-fluid',
                         'loading' => 'lazy',
                         'decoding' => 'async',
-                        'alt' => '',
-                        'title' => '',
                         'sizes' => '100vw',
+                        'width' => '32',
                     ]) }}
                     onload="window.requestAnimationFrame(function(){if(!(size=getBoundingClientRect().width))return;onload=null;sizes=Math.ceil(size/window.innerWidth*100)+'vw';});"
                 >
@@ -43,9 +41,8 @@ final class ResponsiveImage extends Component
                         'class' => 'img-fluid',
                         'loading' => 'lazy',
                         'decoding' => 'async',
-                        'alt' => '',
-                        'title' => '',
                         'sizes' => '100vw',
+                        'width' => '32',
                     ]) }}>
             @endif
         blade;
@@ -56,8 +53,8 @@ final class ResponsiveImage extends Component
         //        --max=85 --strip-all --all-progressive
         //        https://joelmale.com/blog/image-optimization-in-laravel-applications-optimize-user-images-easily
         $key = 'responsive-image-' . str($file)
-                ->slug()
-                ->toString();
+            ->slug()
+            ->toString();
 
         return cache()->rememberForever($key, function () use ($file, $cacheDirectory) {
             $hash = str(md5($file))->limit(10, '');
@@ -69,7 +66,7 @@ final class ResponsiveImage extends Component
             $fileContent = Storage::get($file);
             $originalPath = "{$directory}/{$slugName}-original.{$extension}";
             if (Storage::disk('public')
-                    ->exists($originalPath) === false) {
+                ->exists($originalPath) === false) {
                 Storage::disk('public')
                     ->put($originalPath, $fileContent);
             }
@@ -82,14 +79,14 @@ final class ResponsiveImage extends Component
                 $filename = "{$slugName}-{$width}w.{$extension}";
                 $relativePath = "{$directory}/responsive/{$filename}";
                 if (Storage::disk('public')
-                        ->exists($relativePath) === false) {
+                    ->exists($relativePath) === false) {
                     $img = Image::read($fileContent);
                     $img->scale(width: $width);
                     Storage::disk('public')
                         ->put($relativePath, (string) $img->encodeByExtension($extension, quality: $this->quality));
                 }
                 $srcsetArray[] = Storage::disk('public')
-                        ->url($relativePath) . " {$width}w";
+                    ->url($relativePath) . " {$width}w";
             }
             $placeholderImg = Image::read($fileContent)
                 ->scale(width: 32);
