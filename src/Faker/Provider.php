@@ -65,7 +65,7 @@ final class Provider extends Base
     public function localImage($ratio = '16x9', $sourceDir = null): string
     {
         $ratio = str_replace(':', 'x', $ratio);
-        if (!in_array($ratio, ['1x1', '4x3', '3x4', '9x16', '3x2', '16x9', '21x9'], true)) {
+        if (! in_array($ratio, ['1x1', '4x3', '3x4', '9x16', '3x2', '16x9', '21x9'], true)) {
             throw new InvalidArgumentException(sprintf('Invalid ratio "%s"', $ratio));
         }
 
@@ -926,7 +926,7 @@ final class Provider extends Base
         ];
 
         return 'heroicon-' . collect($icons)
-                ->random(1)->first();
+            ->random(1)->first();
     }
 
     private function saltTags($text, $nbTags = 3): string
