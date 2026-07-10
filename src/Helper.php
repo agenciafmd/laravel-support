@@ -475,4 +475,9 @@ final class Helper
             $extension,
         ];
     }
+
+    public static function floatToInt(float|string $value): int
+    {
+        return (int) bcmul((string) $value, '100', 0);
+    }
 }
