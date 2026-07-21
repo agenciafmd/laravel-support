@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use voku\helper\ASCII;
+use finfo;
 
 final class Helper
 {
@@ -459,16 +460,41 @@ final class Helper
         $content = str($string)
             ->after('base64,')
             ->toString();
+        $binaryData = base64_decode($content);
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        $mimeType = $finfo->buffer($binaryData);
+        $extensionMap = [
+            // Documentos e Texto
+            'text/html' => 'html',
+            'text/plain' => 'txt',
+            'text/css' => 'css',
+            'text/javascript' => 'js',
+            'application/json' => 'json',
+            'application/pdf' => 'pdf',
 
-        $extension = 'jpg';
-        if (str($string)
-            ->startsWith('data:image')) {
-            $extension = str($string)
-                ->before(';')
-                ->after('/')
-                ->lower()
-                ->toString();
-        }
+            // Imagens
+            'image/png' => 'png',
+            'image/jpeg' => 'jpg',
+            'image/gif' => 'gif',
+            'image/webp' => 'webp',
+
+            // Áudio e Vídeo
+            'video/mp4' => 'mp4',
+            'video/mpeg' => 'mpeg',
+            'audio/mpeg' => 'mp3',
+            'audio/wav' => 'wav',
+
+            // Arquivos Comprimidos
+            'application/zip' => 'zip',
+            'application/vnd.rar' => 'rar',
+            'application/gzip' => 'gz',
+
+            // Pacote Office
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => 'docx',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => 'xlsx',
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation' => 'pptx',
+        ];
+        $extension = $extensionMap[$mimeType] ?? 'jpg';
 
         return [
             base64_decode($content),
