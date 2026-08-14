@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Agenciafmd\Support;
 
+use finfo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use voku\helper\ASCII;
-use finfo;
 
 final class Helper
 {
