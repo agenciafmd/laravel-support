@@ -311,7 +311,8 @@ final class Helper
         array $data = [],
         string $message = 'Item não encontrado',
         int $code = 404
-    ): JsonResponse {
+    ): JsonResponse
+    {
         return response()->json([
             'code' => $code,
             'message' => $message,
@@ -505,5 +506,15 @@ final class Helper
     public static function floatToInt(float|string $value): int
     {
         return (int) bcmul((string) $value, '100', 0);
+    }
+
+    public static function aspectRatio(int $width, int $height): string
+    {
+        $gcd = static function ($a, $b) use (&$gcd) {
+            return $b ? $gcd($b, $a % $b) : $a;
+        };
+        $divisor = $gcd($width, $height);
+
+        return ($width / $divisor) . ':' . ($height / $divisor);
     }
 }
