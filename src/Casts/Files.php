@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Agenciafmd\Courses\Casts;
+namespace Agenciafmd\Support\Casts;
 
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
