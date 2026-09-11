@@ -7,50 +7,45 @@ namespace Agenciafmd\Support\Traits;
 use Illuminate\Http\File;
 use Illuminate\Support\Facades\Storage;
 use RuntimeException;
+use Throwable;
 
 trait SeederSupport
 {
-    public string $storageUrl = 'https://fmd.ag/media/';
-
     /**
-     * devemos sobrepor o `attributes` para adicionar novos atributos.
+     * Devemos sobrepor o `attributes` para montar os campos de cada recurso.
      *
      * @param  array<mixed, mixed>  $item
      * @return array<string, mixed>
      */
-    protected function attributes(array $item): array
+    abstract protected function attributes(array $item): array;
+
+    /**
+     * A URL pública onde a mídia do legado está hospedada.
+     * Devemos sobrepor o `storageUrl` em cada projeto.
+     */
+    protected function storageUrl(): string
     {
-        return [
-            'id' => $this->integer($item, 'id'),
-            'is_active' => true,
-            'star' => $this->boolean($item, 'star'),
-            'name' => $this->string($item, 'name'),
-            'description' => str($this->string($item, 'description'))
-                ->squish()
-                ->replace('</p><p>', "\n")
-                ->stripTags()
-                ->toString(),
-            'info' => $this->putOnStorage($this->string($item, 'info'), 'line/info/' . date('Y/m/d')),
-            'image' => $this->putOnStorage($this->string($item, 'image'), 'line/image/' . date('Y/m/d')),
-            'sort' => $this->integer($item, 'order'),
-        ];
+        return 'https://fmd.ag/media/';
     }
 
     /**
-     * The legacy rows of `database/data/lines.json`.
+     * The legacy rows of `database/data/{$jsonFile}`.
      *
      * @return list<array<mixed, mixed>>
-     * @throws \Throwable
+     *
+     * @throws Throwable
      */
-    protected function rows(string $jsonFile = 'lines.json'): array
+    protected function rows(string $jsonFile): array
     {
-        $contents = file_get_contents(database_path("data/{$jsonFile}"));
+        $path = database_path("data/{$jsonFile}");
 
-        throw_unless(is_string($contents), RuntimeException::class, 'Unable to read the legacy lines dump.');
+        $contents = file_get_contents($path);
+
+        throw_unless(is_string($contents), RuntimeException::class, "Unable to read the legacy dump at [{$path}].");
 
         $rows = json_decode($contents, true, 512, JSON_THROW_ON_ERROR);
 
-        throw_unless(is_array($rows), RuntimeException::class, 'The legacy lines dump is not a valid JSON array.');
+        throw_unless(is_array($rows), RuntimeException::class, "The legacy dump at [{$path}] is not a valid JSON array.");
 
         return array_values(array_filter($rows, static fn (mixed $row): bool => is_array($row)));
     }
@@ -89,7 +84,7 @@ trait SeederSupport
             return null;
         }
 
-        $publicUrl = $this->storageUrl . $url;
+        $publicUrl = $this->storageUrl() . $url;
         $fileInfo = pathinfo($url);
         $localPath = $fileInfo['dirname'];
         $fileName = $fileInfo['basename'];
