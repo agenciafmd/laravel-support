@@ -10,9 +10,12 @@ use Illuminate\Support\Collection;
 
 final class CacheService
 {
+    /**
+     * @var array<int, string>
+     */
     private static array $keys = [];
 
-    public static function setUp($model)
+    public static function setUp(mixed $model): bool
     {
         ob_start();
         self::$keys[] = $key = self::normalizeKey($model);
@@ -20,27 +23,29 @@ final class CacheService
         return self::has($key);
     }
 
-    public static function tearDown()
+    public static function tearDown(): string
     {
         $key = array_pop(self::$keys);
+        throw_if($key === null, Exception::class, 'Cache tearDown called without a matching setUp.');
+
         $fragment = ob_get_clean();
 
-        return self::put($key, $fragment);
+        return self::put($key, $fragment === false ? '' : $fragment);
     }
 
-    public static function put($key, $fragment)
+    public static function put(mixed $key, string $fragment): string
     {
-        $key = self::normalizeCacheKey($key);
+        $key = self::normalizeKey($key);
         $cache = resolve(Cache::class);
 
         return $cache
             ->tags('views')
-            ->rememberForever($key, fn () => $fragment);
+            ->rememberForever($key, fn (): string => $fragment);
     }
 
-    public static function has($key)
+    public static function has(mixed $key): bool
     {
-        $key = self::normalizeCacheKey($key);
+        $key = self::normalizeKey($key);
         $cache = resolve(Cache::class);
 
         return $cache
@@ -48,29 +53,20 @@ final class CacheService
             ->has($key);
     }
 
-    private static function normalizeKey($item, $key = null)
+    private static function normalizeKey(mixed $item): string
     {
-        if (is_string($item) || is_string($key)) {
-            return is_string($item) ? $item : $key;
+        if (is_string($item)) {
+            return $item;
         }
 
         if (is_object($item) && method_exists($item, 'getCacheKey')) {
-            return $item->getCacheKey();
+            return (string) $item->getCacheKey();
         }
 
         if ($item instanceof Collection) {
-            return md5($item);
+            return md5($item->toJson());
         }
 
-        return new Exception('Could not determine an appropriate cache key.');
-    }
-
-    private static function normalizeCacheKey($key)
-    {
-        if (is_object($key) && method_exists($key, 'getCacheKey')) {
-            return $key->getCacheKey();
-        }
-
-        return $key;
+        throw new Exception('Could not determine an appropriate cache key.');
     }
 }

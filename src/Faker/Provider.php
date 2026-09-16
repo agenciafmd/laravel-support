@@ -62,32 +62,36 @@ final class Provider extends Base
         };
     }
 
-    public function localImage($ratio = '16x9', $sourceDir = null): string
+    public function localImage(string $ratio = '16x9', ?string $sourceDir = null): string
     {
         $ratio = str_replace(':', 'x', $ratio);
         if (! in_array($ratio, ['1x1', '4x3', '3x4', '9x16', '3x2', '16x9', '21x9'], true)) {
             throw new InvalidArgumentException(sprintf('Invalid ratio "%s"', $ratio));
         }
 
-        if (! $sourceDir) {
+        if ($sourceDir === null || $sourceDir === '') {
             $sourceDir = __DIR__ . "/../../resources/faker/images/{$ratio}/";
         }
 
         return fake()->file($sourceDir);
     }
 
-    public function localFile($sourceDir = null): string
+    public function localFile(?string $sourceDir = null): string
     {
-        if (! $sourceDir) {
+        if ($sourceDir === null || $sourceDir === '') {
             $sourceDir = __DIR__ . '/../../resources/faker/pdfs/';
         }
 
         return fake()->file($sourceDir);
     }
 
-    public function tags($max = 3, $allowed = []): array
+    /**
+     * @param  array<int, string>  $allowed
+     * @return array<int, string>
+     */
+    public function tags(int $max = 3, array $allowed = []): array
     {
-        if (! count($allowed)) {
+        if ($allowed === []) {
             $allowed = [
                 'Economia',
                 'Financiamento',
@@ -100,24 +104,24 @@ final class Provider extends Base
         return fake()->randomElements($allowed, fake()->numberBetween(1, $max));
     }
 
-    public function htmlParagraph($nbSentences = 3): string
+    public function htmlParagraph(int $nbSentences = 3): string
     {
         return '<p>' . fake()->paragraph($nbSentences) . '</p>';
     }
 
-    public function htmlParagraphs($nbParagraphs = 10): string
+    public function htmlParagraphs(int $nbParagraphs = 10): string
     {
         return collect(range(1, $nbParagraphs))
-            ->map(fn () => fake()->paragraph(10))
-            ->map(fn ($paragraph): string => $this->saltTags($paragraph))
-            ->map(fn ($paragraph): string => "<p>{$paragraph}</p>")
+            ->map(fn (): string => fake()->paragraph(10))
+            ->map(fn (string $paragraph): string => $this->saltTags($paragraph))
+            ->map(fn (string $paragraph): string => "<p>{$paragraph}</p>")
             ->implode('');
     }
 
     public function htmlText(): string
     {
         $blocks[] = $this->htmlParagraphs(fake()->numberBetween(3, 6));
-        $blocks[] = sprintf("<p><img src=\"%s\" width=\"800\" style=\"width\: 800; height\: 600;\" height=\"600\" data-id=\"%s\"></p>", 'https://picsum.photos/800/600?random=' . random_int(10000, 15999), fake()->uuid());
+        $blocks[] = sprintf('<p><img src="%s" width="800" style="width: 800px; height: 600px;" height="600" data-id="%s"></p>', 'https://picsum.photos/800/600?random=' . random_int(10000, 15999), fake()->uuid());
         $blocks[] = sprintf('<blockquote>%s</blockquote>', $this->htmlParagraphs(fake()->numberBetween(1, 3)));
         $blocks[] = sprintf('<details><summary>%s</summary><div data-type="detailsContent">%s</div></details>', fake()->sentence(3), $this->htmlParagraphs(fake()->numberBetween(1, 3)));
 
@@ -929,7 +933,7 @@ final class Provider extends Base
             ->random(1)->first();
     }
 
-    private function saltTags($text, $nbTags = 3): string
+    private function saltTags(string $text, int $nbTags = 3): string
     {
         $tags = [
             '<strong>%s</strong>',

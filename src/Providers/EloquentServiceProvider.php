@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Agenciafmd\Support\Providers;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
 
 final class EloquentServiceProvider extends ServiceProvider
@@ -22,7 +23,7 @@ final class EloquentServiceProvider extends ServiceProvider
     private function loadMacros(): void
     {
         Builder::macro('toSelectOptions',
-            function (string $label = 'name', string $value = 'id', bool $disabled = false) {
+            function (string $label = 'name', string $value = 'id', bool $disabled = false): array {
                 $fields = [$value, $label];
                 if ($disabled) {
                     $fields[] = 'is_active';
@@ -30,7 +31,7 @@ final class EloquentServiceProvider extends ServiceProvider
 
                 return $this->select($fields)
                     ->get()
-                    ->map(function ($item) use ($label, $value, $disabled): array {
+                    ->map(function (Model $item) use ($label, $value, $disabled): array {
                         $option = [
                             'label' => $item->{$label},
                             'value' => $item->{$value},
@@ -50,7 +51,7 @@ final class EloquentServiceProvider extends ServiceProvider
                     ->all();
             });
 
-        Builder::macro('toSimpleSelectOptions', fn () => collect($this->toSelectOptions())
+        Builder::macro('toSimpleSelectOptions', fn (): array => collect($this->toSelectOptions())
             ->mapWithKeys(fn (array $item): array => [
                 $item['value'] => $item['label'],
             ])

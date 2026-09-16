@@ -9,6 +9,7 @@ use Illuminate\Contracts\Validation\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use stdClass;
 use voku\helper\ASCII;
 
 final class Helper
@@ -408,7 +409,7 @@ final class Helper
         $rgb = str($hexColor)
             ->replace('#', '')
             ->split(2)
-            ->map(fn ($hex): int|float => hexdec($hex) / 255);
+            ->map(fn (string $hex): int|float => hexdec($hex) / 255);
 
         $red = $rgb[0];
         $green = $rgb[1];
@@ -437,18 +438,18 @@ final class Helper
     public static function states(): array
     {
         return collect(self::statesCities())
-            ->flatMap(fn ($state): array => [$state->sigla => $state->nome])
+            ->flatMap(fn (stdClass $state): array => [$state->sigla => $state->nome])
             ->toArray();
     }
 
     public static function cities(string $uf): array
     {
         return collect(self::statesCities())
-            ->filter(fn ($state): bool => $state->sigla === $uf)
-            ->flatMap(fn ($state) => collect($state->cidades)
-                ->mapWithKeys(fn ($city): array => [$city => $city])
+            ->filter(fn (stdClass $state): bool => $state->sigla === $uf)
+            ->flatMap(fn (stdClass $state): Collection => collect($state->cidades)
+                ->mapWithKeys(fn (string $city): array => [$city => $city])
             )
-            ->toArray();
+            ->all();
     }
 
     public static function getContentAndExtensionFromBase64File(string $string): array
@@ -506,8 +507,8 @@ final class Helper
 
     public static function aspectRatio(int $width, int $height): string
     {
-        $gcd = static function ($a, $b) use (&$gcd) {
-            return $b ? $gcd($b, $a % $b) : $a;
+        $gcd = static function (int $a, int $b) use (&$gcd): int {
+            return $b !== 0 ? $gcd($b, $a % $b) : $a;
         };
         $divisor = $gcd($width, $height);
 

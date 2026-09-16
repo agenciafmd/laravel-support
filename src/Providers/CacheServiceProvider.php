@@ -28,7 +28,7 @@ final class CacheServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        Blade::directive('cache', fn ($expression): string => "<?php if (!\Agenciafmd\Support\Services\CacheService::setUp({$expression})) {?>");
+        Blade::directive('cache', fn (string $expression): string => "<?php if (!\Agenciafmd\Support\Services\CacheService::setUp({$expression})) {?>");
         Blade::directive('endcache', fn (): string => '<?php } echo ' . CacheService::class . '::tearDown() ?>');
 
         if ($this->app->environment(['local']) && (config('cache.default') === 'redis') && ! $this->app->runningInConsole()) {

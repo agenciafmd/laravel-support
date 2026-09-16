@@ -22,7 +22,7 @@ final class RequestServiceProvider extends ServiceProvider
 
     private function loadRequestMacros(): void
     {
-        Request::macro('currentRouteNameStartsWith', function ($routeNames) {
+        Request::macro('currentRouteNameStartsWith', function (string|array $routeNames): bool {
             $routeNames = Arr::wrap($routeNames);
 
             return str(request()
