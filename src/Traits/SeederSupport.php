@@ -47,7 +47,7 @@ trait SeederSupport
 
         throw_unless(is_array($rows), RuntimeException::class, "The legacy dump at [{$path}] is not a valid JSON array.");
 
-        return array_values(array_filter($rows, static fn (mixed $row): bool => is_array($row)));
+        return array_values(array_filter($rows, is_array(...)));
     }
 
     /**

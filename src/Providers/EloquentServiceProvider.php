@@ -30,7 +30,7 @@ final class EloquentServiceProvider extends ServiceProvider
 
                 return $this->select($fields)
                     ->get()
-                    ->map(function ($item) use ($label, $value, $disabled) {
+                    ->map(function ($item) use ($label, $value, $disabled): array {
                         $option = [
                             'label' => $item->{$label},
                             'value' => $item->{$value},
@@ -47,17 +47,13 @@ final class EloquentServiceProvider extends ServiceProvider
                         'value' => '',
                         'disabled' => false,
                     ])
-                    ->toArray();
+                    ->all();
             });
 
-        Builder::macro('toSimpleSelectOptions', function () {
-            return collect($this->toSelectOptions())
-                ->mapWithKeys(function ($item) {
-                    return [
-                        $item['value'] => $item['label'],
-                    ];
-                })
-                ->toArray();
-        });
+        Builder::macro('toSimpleSelectOptions', fn () => collect($this->toSelectOptions())
+            ->mapWithKeys(fn (array $item): array => [
+                $item['value'] => $item['label'],
+            ])
+            ->toArray());
     }
 }

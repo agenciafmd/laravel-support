@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Validator;
 
 final class CommaSeparatedEmails implements ValidationRule
 {
-    private const EMAIL_RULES = [
+    private const array EMAIL_RULES = [
         'email' => [
             'required',
             'email:rfc,dns',
@@ -34,6 +34,6 @@ final class CommaSeparatedEmails implements ValidationRule
     {
         $normalized = str_replace([' ', ';'], ',', $value);
 
-        return array_filter(array_map('trim', explode(',', $normalized)));
+        return array_filter(array_map(trim(...), explode(',', $normalized)));
     }
 }

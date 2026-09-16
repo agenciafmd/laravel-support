@@ -31,7 +31,7 @@ final class StrServiceProvider extends ServiceProvider
 
     private function loadStrMacros(): void
     {
-        Str::macro('acronym', static function (string $string, string $delimiter = '') {
+        Str::macro('acronym', static function (string $string, string $delimiter = ''): string {
             if (empty($string)) {
                 return '';
             }
@@ -47,25 +47,23 @@ final class StrServiceProvider extends ServiceProvider
             return $acronym;
         });
 
-        Str::macro('readDuration', static function (...$text) {
+        Str::macro('readDuration', static function (...$text): int {
             $totalWords = str_word_count(implode(' ', $text));
             $minutesToRead = round($totalWords / 200);
 
             return (int) max(1, $minutesToRead);
         });
 
-        Str::macro('localSquish', static function (string $string) {
+        Str::macro('localSquish', static function (string $string): string {
             $string = preg_replace('~^[\s﻿]+|[\s﻿]+$~u', '', $string);
             $string = preg_replace('~(\s|\x{3164})+~u', ' ', $string);
 
             return mb_trim($string);
         });
 
-        Str::macro('printable', static function (string $string) {
-            return preg_replace('/[[:^print:]]/', '', $string);
-        });
+        Str::macro('printable', static fn (string $string): ?string => preg_replace('/[[:^print:]]/', '', $string));
 
-        Str::macro('numbersToWords', static function (mixed $string, array $dictionary = []) {
+        Str::macro('numbersToWords', static function (mixed $string, array $dictionary = []): string {
             $dictionary += [
                 0 => 'zero',
                 1 => 'um',
@@ -95,28 +93,16 @@ final class StrServiceProvider extends ServiceProvider
 
     private function loadStringableMacros(): void
     {
-        Stringable::macro('acronym', function (string $delimiter = '') {
-            return new Stringable(Str::acronym($this->value, $delimiter));
-        });
+        Stringable::macro('acronym', fn (string $delimiter = ''): Stringable => new Stringable(Str::acronym($this->value, $delimiter)));
 
-        Stringable::macro('readDuration', function () {
-            return new Stringable(Str::readDuration($this->value));
-        });
+        Stringable::macro('readDuration', fn (): Stringable => new Stringable(Str::readDuration($this->value)));
 
-        Stringable::macro('sanitizeName', function () {
-            return new Stringable(Helper::sanitizeName($this->value));
-        });
+        Stringable::macro('sanitizeName', fn (): Stringable => new Stringable(Helper::sanitizeName($this->value)));
 
-        Stringable::macro('localSquish', function () {
-            return new Stringable(Str::localSquish($this->value));
-        });
+        Stringable::macro('localSquish', fn (): Stringable => new Stringable(Str::localSquish($this->value)));
 
-        Stringable::macro('printable', function () {
-            return new Stringable(Str::printable($this->value));
-        });
+        Stringable::macro('printable', fn (): Stringable => new Stringable(Str::printable($this->value)));
 
-        Stringable::macro('numbersToWords', function (array $dictionary = []) {
-            return new Stringable(Str::numbersToWords($this->value, $dictionary));
-        });
+        Stringable::macro('numbersToWords', fn (array $dictionary = []): Stringable => new Stringable(Str::numbersToWords($this->value, $dictionary)));
     }
 }

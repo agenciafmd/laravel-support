@@ -109,8 +109,8 @@ final class Provider extends Base
     {
         return collect(range(1, $nbParagraphs))
             ->map(fn () => fake()->paragraph(10))
-            ->map(fn ($paragraph) => $this->saltTags($paragraph))
-            ->map(fn ($paragraph) => "<p>{$paragraph}</p>")
+            ->map(fn ($paragraph): string => $this->saltTags($paragraph))
+            ->map(fn ($paragraph): string => "<p>{$paragraph}</p>")
             ->implode('');
     }
 

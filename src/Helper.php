@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Agenciafmd\Support;
 
 use finfo;
+use Illuminate\Contracts\Validation\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -92,7 +93,7 @@ final class Helper
             return null;
         }
 
-        $validator = app('validator')->make(['cpf' => $cpf], ['cpf' => 'cpf']);
+        $validator = resolve(Factory::class)->make(['cpf' => $cpf], ['cpf' => 'cpf']);
         if ($validator->fails()) {
             return null;
         }
@@ -111,7 +112,7 @@ final class Helper
             return null;
         }
 
-        $validator = app('validator')->make(['cnpj' => $cnpj], ['cnpj' => 'cnpj']);
+        $validator = resolve(Factory::class)->make(['cnpj' => $cnpj], ['cnpj' => 'cnpj']);
         if ($validator->fails()) {
             return null;
         }
@@ -154,7 +155,7 @@ final class Helper
 
         $email = ASCII::to_ascii((string) $email, 'en');
 
-        $validator = app('validator')->make(['email' => $email], ['email' => 'email:rfc,dns']);
+        $validator = resolve(Factory::class)->make(['email' => $email], ['email' => 'email:rfc,dns']);
         if ($validator->fails()) {
             return null;
         }
@@ -311,8 +312,7 @@ final class Helper
         array $data = [],
         string $message = 'Item não encontrado',
         int $code = 404
-    ): JsonResponse
-    {
+    ): JsonResponse {
         return response()->json([
             'code' => $code,
             'message' => $message,
@@ -408,7 +408,7 @@ final class Helper
         $rgb = str($hexColor)
             ->replace('#', '')
             ->split(2)
-            ->map(fn ($hex) => hexdec($hex) / 255);
+            ->map(fn ($hex): int|float => hexdec($hex) / 255);
 
         $red = $rgb[0];
         $green = $rgb[1];
@@ -424,33 +424,29 @@ final class Helper
         $channels = str($hex)
             ->replace('#', '')
             ->split(2)
-            ->map(fn (string $color) => hexdec($color));
+            ->map(fn (string $color): int|float => hexdec($color));
 
         return $channels->implode(', ');
     }
 
     public static function statesCities(): Collection
     {
-        return cache()->rememberForever('statesCities', function () {
-            return collect(json_decode(file_get_contents(public_path('json/estados-cidades.json'))));
-        });
+        return cache()->rememberForever('statesCities', fn (): Collection => collect(json_decode(file_get_contents(public_path('json/estados-cidades.json')))));
     }
 
     public static function states(): array
     {
         return collect(self::statesCities())
-            ->flatMap(fn ($state) => [$state->sigla => $state->nome])
+            ->flatMap(fn ($state): array => [$state->sigla => $state->nome])
             ->toArray();
     }
 
     public static function cities(string $uf): array
     {
         return collect(self::statesCities())
-            ->filter(function ($state) use ($uf) {
-                return $state->sigla === $uf;
-            })
+            ->filter(fn ($state): bool => $state->sigla === $uf)
             ->flatMap(fn ($state) => collect($state->cidades)
-                ->mapWithKeys(fn ($city) => [$city => $city])
+                ->mapWithKeys(fn ($city): array => [$city => $city])
             )
             ->toArray();
     }

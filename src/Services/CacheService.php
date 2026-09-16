@@ -31,19 +31,17 @@ final class CacheService
     public static function put($key, $fragment)
     {
         $key = self::normalizeCacheKey($key);
-        $cache = app(Cache::class);
+        $cache = resolve(Cache::class);
 
         return $cache
             ->tags('views')
-            ->rememberForever($key, function () use ($fragment) {
-                return $fragment;
-            });
+            ->rememberForever($key, fn () => $fragment);
     }
 
     public static function has($key)
     {
         $key = self::normalizeCacheKey($key);
-        $cache = app(Cache::class);
+        $cache = resolve(Cache::class);
 
         return $cache
             ->tags('views')

@@ -11,7 +11,7 @@ trait FormRateLimiter
 {
     public function withRateLimiter(): void
     {
-        $throttleKey = str(__CLASS__)->classBasename()->snake()->slug()->toString() . '-' . request()->ip();
+        $throttleKey = str(self::class)->classBasename()->snake()->slug()->toString() . '-' . request()->ip();
         if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
             throw ValidationException::withMessages([
                 'email' => __('validation.throttle', ['seconds' => RateLimiter::availableIn($throttleKey)]),
