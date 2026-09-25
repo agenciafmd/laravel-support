@@ -58,9 +58,13 @@ final class Files implements CastsAttributes
     private function normalize(array $files): array
     {
         return collect($files)
-            ->filter(static fn (mixed $file): bool => is_array($file) && filled($file['file'] ?? null))
-            ->map(static function (array $file): array {
-                $path = (string) $file['file'];
+            ->filter(static fn (mixed $file): bool => is_array($file))
+            ->map(static function (array $file): ?array {
+                $path = $file['file'] ?? null;
+
+                if (! is_string($path) || mb_trim($path) === '') {
+                    return null;
+                }
 
                 return [
                     'name' => $file['name'] ?? null,
@@ -68,6 +72,7 @@ final class Files implements CastsAttributes
                     'size' => rescue(static fn (): int => Storage::size($path), null, report: false),
                 ];
             })
+            ->filter()
             ->values()
             ->all();
     }

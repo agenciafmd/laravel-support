@@ -38,7 +38,7 @@ final class EloquentServiceProvider extends ServiceProvider
                         ];
 
                         if ($disabled) {
-                            $option['disabled'] = ! $item->is_active;
+                            $option['disabled'] = ! $item->getAttribute('is_active');
                         }
 
                         return $option;
@@ -51,10 +51,8 @@ final class EloquentServiceProvider extends ServiceProvider
                     ->all();
             });
 
-        Builder::macro('toSimpleSelectOptions', fn (): array => collect($this->toSelectOptions())
-            ->mapWithKeys(fn (array $item): array => [
-                $item['value'] => $item['label'],
-            ])
-            ->toArray());
+        Builder::macro('toSimpleSelectOptions', fn (string $label = 'name', string $value = 'id'): array => $this->pluck($label, $value)
+            ->prepend('-', '')
+            ->all());
     }
 }

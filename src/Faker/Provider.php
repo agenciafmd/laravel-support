@@ -18,7 +18,7 @@ final class Provider extends Base
         $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
             . 'abcdefghijklmnopqrstuvwxyz_-';
 
-        $id = mb_substr(self::shuffle($characters), 0, 11);
+        $id = mb_substr(self::shuffleString($characters), 0, 11);
 
         return $this->generator->parse($id);
     }
@@ -48,7 +48,7 @@ final class Provider extends Base
     public function youtubeChannelUri(): string
     {
         return sprintf('https://www.youtube.com/%s/%s',
-            self::randomElement(['channel', 'user']),
+            ['channel', 'user'][self::numberBetween(0, 1)],
             self::regexify(sprintf('[a-zA-Z0-9\-]{1,%s}', self::numberBetween(1, 20)))
         );
     }
@@ -101,7 +101,10 @@ final class Provider extends Base
             ];
         }
 
-        return fake()->randomElements($allowed, fake()->numberBetween(1, $max));
+        return collect(fake()->randomElements($allowed, fake()->numberBetween(1, $max)))
+            ->filter(static fn (mixed $tag): bool => is_string($tag))
+            ->values()
+            ->all();
     }
 
     public function htmlParagraph(int $nbSentences = 3): string

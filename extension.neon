@@ -1,0 +1,5 @@
+services:
+    -
+        class: Agenciafmd\Support\PHPStan\FakerProviderMethodsExtension
+        tags:
+            - phpstan.broker.methodsClassReflectionExtension

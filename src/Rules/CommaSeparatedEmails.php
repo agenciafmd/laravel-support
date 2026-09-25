@@ -19,6 +19,12 @@ final class CommaSeparatedEmails implements ValidationRule
 
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
+        if (! is_string($value)) {
+            $fail(__('validation.string'));
+
+            return;
+        }
+
         $emails = $this->parseEmails($value);
 
         foreach ($emails as $email) {
@@ -30,6 +36,9 @@ final class CommaSeparatedEmails implements ValidationRule
         }
     }
 
+    /**
+     * @return array<int, string>
+     */
     private function parseEmails(string $value): array
     {
         $normalized = str_replace([' ', ';'], ',', $value);

@@ -60,7 +60,11 @@ final class CacheService
         }
 
         if (is_object($item) && method_exists($item, 'getCacheKey')) {
-            return (string) $item->getCacheKey();
+            $cacheKey = $item->getCacheKey();
+
+            if (is_string($cacheKey) || is_int($cacheKey)) {
+                return (string) $cacheKey;
+            }
         }
 
         if ($item instanceof Collection) {

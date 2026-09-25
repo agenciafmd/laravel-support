@@ -8,8 +8,11 @@ use finfo;
 use Illuminate\Contracts\Validation\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 use stdClass;
+use Stringable;
 use voku\helper\ASCII;
 
 final class Helper
@@ -37,7 +40,7 @@ final class Helper
      */
     public static function onlyNumbers(string $string): string
     {
-        return preg_replace('/[^0-9]/', '', $string);
+        return preg_replace('/[^0-9]/', '', $string) ?? '';
     }
 
     /**
@@ -45,22 +48,27 @@ final class Helper
      */
     public static function onlyAlphanumeric(string $string): string
     {
-        return preg_replace('/[[:^alnum:]]/', '', $string);
+        return preg_replace('/[[:^alnum:]]/', '', $string) ?? '';
     }
 
     /**
      * Formata a string a partir da mascara
+     *
+     * Cada `#` da máscara recebe o próximo caractere da string. Os `#` que sobram continuam na máscara
+     * e os caracteres excedentes são descartados.
      */
     public static function mask(string $string, string $mask): string
     {
-        $string = str_replace(' ', '', $string);
-        $length = mb_strlen($string);
+        $characters = mb_str_split(str_replace(' ', '', $string));
+        $masked = '';
 
-        for ($i = 0; $i < $length; $i++) {
-            $mask[mb_strpos($mask, '#')] = $string[$i];
+        foreach (mb_str_split($mask) as $maskCharacter) {
+            $masked .= $maskCharacter === '#'
+                ? (array_shift($characters) ?? '#')
+                : $maskCharacter;
         }
 
-        return $mask;
+        return $masked;
     }
 
     /**
@@ -72,7 +80,7 @@ final class Helper
             return null;
         }
 
-        $numericPhone = self::onlyNumbers($phone);
+        $numericPhone = self::onlyNumbers(self::scalarToString($phone));
 
         if (Str::length($numericPhone) === 10) {
             return self::mask($numericPhone, '(##) ####-####');
@@ -99,7 +107,7 @@ final class Helper
             return null;
         }
 
-        $cpf = self::onlyNumbers($cpf);
+        $cpf = self::onlyNumbers(self::scalarToString($cpf));
 
         return self::mask($cpf, '###.###.###-##');
     }
@@ -118,7 +126,7 @@ final class Helper
             return null;
         }
 
-        $cnpj = self::onlyNumbers($cnpj);
+        $cnpj = self::onlyNumbers(self::scalarToString($cnpj));
 
         return self::mask($cnpj, '##.###.###/####-##');
     }
@@ -132,7 +140,7 @@ final class Helper
             return null;
         }
 
-        $rg = self::onlyAlphanumeric($rg);
+        $rg = self::onlyAlphanumeric(self::scalarToString($rg));
 
         $digit = mb_substr($rg, -1);
         $body = self::onlyNumbers(mb_substr($rg, 0, -1));
@@ -154,7 +162,7 @@ final class Helper
             return null;
         }
 
-        $email = ASCII::to_ascii((string) $email, 'en');
+        $email = ASCII::to_ascii(self::scalarToString($email), 'en');
 
         $validator = resolve(Factory::class)->make(['email' => $email], ['email' => 'email:rfc,dns']);
         if ($validator->fails()) {
@@ -193,7 +201,7 @@ final class Helper
             return null;
         }
 
-        $postalCode = self::onlyNumbers($postalCode);
+        $postalCode = self::onlyNumbers(self::scalarToString($postalCode));
 
         return self::mask($postalCode, '#####-###');
     }
@@ -203,7 +211,7 @@ final class Helper
      */
     public static function sanitizeSchedule(mixed $schedule): ?string
     {
-        $schedule = mb_trim($schedule);
+        $schedule = mb_trim(self::scalarToString($schedule));
 
         if (! $schedule) {
             return null;
@@ -247,7 +255,9 @@ final class Helper
      */
     public static function youtubeId(mixed $url): ?string
     {
-        if (! $url) {
+        $url = self::scalarToString($url);
+
+        if ($url === '') {
             return null;
         }
 
@@ -308,6 +318,8 @@ final class Helper
 
     /**
      * Formata o retorno de falha para json normalizado
+     *
+     * @param  array<array-key, mixed>  $data
      */
     public static function error(
         array $data = [],
@@ -330,7 +342,7 @@ final class Helper
             return null;
         }
 
-        $value = self::onlyNumbers($value);
+        $value = self::onlyNumbers(self::scalarToString($value));
 
         $decimal = mb_substr($value, -2);
         $body = mb_substr($value, 0, -2);
@@ -388,7 +400,7 @@ final class Helper
             '9' => 'nove',
         ];
 
-        $name = str($value)
+        $name = str(self::scalarToString($value))
             ->localSquish()
             ->ascii()
             ->split('//');
@@ -430,28 +442,50 @@ final class Helper
         return $channels->implode(', ');
     }
 
+    /**
+     * Estados e cidades de `public/json/estados-cidades.json`, com `sigla`, `nome` e `cidades`
+     *
+     * @return Collection<int, stdClass>
+     */
     public static function statesCities(): Collection
     {
-        return cache()->rememberForever('statesCities', fn (): Collection => collect(json_decode(file_get_contents(public_path('json/estados-cidades.json')))));
+        return cache()->rememberForever('statesCities', static function (): Collection {
+            $states = json_decode(File::get(public_path('json/estados-cidades.json')));
+
+            return collect(is_array($states) ? $states : [])
+                ->whereInstanceOf(stdClass::class)
+                ->values();
+        });
     }
 
+    /**
+     * @return array<string, string>
+     */
     public static function states(): array
     {
-        return collect(self::statesCities())
-            ->flatMap(fn (stdClass $state): array => [$state->sigla => $state->nome])
-            ->toArray();
-    }
-
-    public static function cities(string $uf): array
-    {
-        return collect(self::statesCities())
-            ->filter(fn (stdClass $state): bool => $state->sigla === $uf)
-            ->flatMap(fn (stdClass $state): Collection => collect($state->cidades)
-                ->mapWithKeys(fn (string $city): array => [$city => $city])
-            )
+        return self::statesCities()
+            ->mapWithKeys(static fn (stdClass $state): array => [
+                self::scalarToString($state->sigla ?? null) => self::scalarToString($state->nome ?? null),
+            ])
             ->all();
     }
 
+    /**
+     * @return array<string, string>
+     */
+    public static function cities(string $uf): array
+    {
+        return self::statesCities()
+            ->filter(static fn (stdClass $state): bool => ($state->sigla ?? null) === $uf)
+            ->flatMap(static fn (stdClass $state): array => is_array($state->cidades ?? null) ? $state->cidades : [])
+            ->filter(static fn (mixed $city): bool => is_string($city))
+            ->mapWithKeys(static fn (string $city): array => [$city => $city])
+            ->all();
+    }
+
+    /**
+     * @return array{0: string, 1: string} conteúdo binário e extensão
+     */
     public static function getContentAndExtensionFromBase64File(string $string): array
     {
         $string = str_replace(':base64', ';base64', $string);
@@ -502,7 +536,11 @@ final class Helper
 
     public static function floatToInt(float|string $value): int
     {
-        return (int) bcmul((string) $value, '100', 0);
+        $number = (string) $value;
+
+        throw_unless(is_numeric($number), InvalidArgumentException::class, "Value [{$number}] is not numeric.");
+
+        return (int) bcmul($number, '100', 0);
     }
 
     public static function aspectRatio(int $width, int $height): string
@@ -513,5 +551,18 @@ final class Helper
         $divisor = $gcd($width, $height);
 
         return ($width / $divisor) . ':' . ($height / $divisor);
+    }
+
+    /**
+     * Converte entradas escalares (e objetos `Stringable`) para string; qualquer outra coisa vira vazio
+     */
+    private static function scalarToString(mixed $value): string
+    {
+        return match (true) {
+            is_string($value) => $value,
+            is_int($value), is_float($value) => (string) $value,
+            $value instanceof Stringable => (string) $value,
+            default => '',
+        };
     }
 }
