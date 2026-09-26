@@ -30,7 +30,15 @@ final class Files implements CastsAttributes
 
         $decoded = json_decode($value, true);
 
-        return is_array($decoded) ? array_values($decoded) : [];
+        return collect(is_array($decoded) ? $decoded : [])
+            ->filter(static fn (mixed $file): bool => is_array($file))
+            ->map(static fn (array $file): array => [
+                'name' => $file['name'] ?? null,
+                'file' => $file['file'] ?? null,
+                'size' => $file['size'] ?? null,
+            ])
+            ->values()
+            ->all();
     }
 
     /**
