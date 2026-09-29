@@ -9,7 +9,6 @@ use Illuminate\Contracts\Validation\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
 use InvalidArgumentException;
 use stdClass;
 use Stringable;
@@ -82,11 +81,11 @@ final class Helper
 
         $numericPhone = self::onlyNumbers(self::scalarToString($phone));
 
-        if (Str::length($numericPhone) === 10) {
+        if (str($numericPhone)->length() === 10) {
             return self::mask($numericPhone, '(##) ####-####');
         }
 
-        if (Str::length($numericPhone) === 11) {
+        if (str($numericPhone)->length() === 11) {
             return self::mask($numericPhone, '(##) #####-####');
         }
 
@@ -217,21 +216,21 @@ final class Helper
             return null;
         }
 
-        if (Str::length($schedule) > 5) {
+        if (str($schedule)->length() > 5) {
             return null;
         }
 
-        if (! Str::contains($schedule, ':')) {
+        if (! str($schedule)->contains(':')) {
             return null;
         }
 
         [$hour, $minute] = explode(':', $schedule);
 
-        $hour = ($hour < 23) ? $hour : '00';
-        $minute = ($minute < 59) ? $minute : '00';
+        $hour = ($hour <= 23) ? $hour : '00';
+        $minute = ($minute <= 59) ? $minute : '00';
 
-        $hour = Str::padLeft($hour, 2, '0');
-        $minute = Str::padLeft($minute, 2, '0');
+        $hour = str($hour)->padLeft(2, '0')->toString();
+        $minute = str($minute)->padLeft(2, '0')->toString();
 
         return "{$hour}:{$minute}";
     }

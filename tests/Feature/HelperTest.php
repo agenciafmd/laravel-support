@@ -31,6 +31,21 @@ it('formats numeric input the same way as string input', function (string $metho
     'money' => ['formatMoney', 123456, 'R$ 1.234,56'],
 ]);
 
+it('pads the hour and minute of a schedule with zeros', function (): void {
+    expect(Helper::sanitizeSchedule('9:5'))->toBe('09:05');
+});
+
+it('keeps the last hour and minute of the day', function (): void {
+    expect(Helper::sanitizeSchedule('23:59'))->toBe('23:59');
+});
+
+it('resets an hour or minute out of range to zero', function (string $schedule, string $expected): void {
+    expect(Helper::sanitizeSchedule($schedule))->toBe($expected);
+})->with([
+    'hour' => ['24:30', '00:30'],
+    'minute' => ['10:60', '10:00'],
+]);
+
 it('returns null for input that is not a scalar', function (string $method): void {
     expect(Helper::{$method}(['11987654321']))->toBeNull();
 })->with([
