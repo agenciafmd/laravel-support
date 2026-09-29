@@ -1,6 +1,7 @@
 {
     "name": "agenciafmd/laravel-support",
     "description": "Itens uteis para serem utilizados nos projetos",
+    "license": "MIT",
     "homepage": "https://github.com/agenciafmd/laravel-support",
     "authors": [
         {
