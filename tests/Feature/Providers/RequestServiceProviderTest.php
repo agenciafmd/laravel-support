@@ -10,7 +10,7 @@ use Tests\TestCase;
 
 use function Pest\Laravel\get;
 
-uses(TestCase::class, RefreshDatabase::class);
+pest()->extend(TestCase::class)->use(RefreshDatabase::class);
 
 it('matches the current route name against a prefix', function (string|array $prefixes, string $expected): void {
     Route::get('/support-request-macro', fn (): string => request()->currentRouteNameStartsWith($prefixes) ? 'yes' : 'no')

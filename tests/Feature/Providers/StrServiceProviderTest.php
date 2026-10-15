@@ -8,7 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
-uses(TestCase::class, RefreshDatabase::class);
+pest()->extend(TestCase::class)->use(RefreshDatabase::class);
 
 it('builds an acronym from the first letter of each word', function (): void {
     expect(Str::acronym('Agência F&MD Digital', '.'))->toBe('A.F.M.D.');

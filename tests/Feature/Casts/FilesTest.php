@@ -10,7 +10,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
-uses(TestCase::class, RefreshDatabase::class);
+pest()->extend(TestCase::class)->use(RefreshDatabase::class);
 
 it('stores each file with its size in bytes', function (): void {
     Storage::fake();
@@ -63,5 +63,5 @@ it('reads only the items that are arrays', function (): void {
 });
 
 it('reads an empty list when the stored value is not valid json', function (): void {
-    expect((new Files)->get(new User, 'files', 'not-json', []))->toBe([]);
+    expect((new Files)->get(new User, 'files', 'not-json', []))->toBeEmpty();
 });

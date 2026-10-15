@@ -9,7 +9,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use InvalidArgumentException;
 use Tests\TestCase;
 
-uses(TestCase::class, RefreshDatabase::class);
+pest()->extend(TestCase::class)->use(RefreshDatabase::class);
 
 it('fills each placeholder of the mask with the next character', function (): void {
     expect(Helper::mask('12345678', '#####-###'))->toBe('12345-678');
@@ -67,7 +67,7 @@ it('lists the cities of a state keyed by their own name', function (): void {
 });
 
 it('returns no cities for an unknown state', function (): void {
-    expect(Helper::cities('XX'))->toBe([]);
+    expect(Helper::cities('XX'))->toBeEmpty();
 });
 
 it('converts a decimal value to cents', function (): void {
