@@ -287,6 +287,42 @@ final class Helper
     }
 
     /**
+     * Normaliza o link do reel do Instagram para o formato canônico
+     */
+    public static function sanitizeInstagramReel(mixed $url): ?string
+    {
+        $code = self::instagramReelCode($url);
+
+        if (! $code) {
+            return null;
+        }
+
+        return "https://www.instagram.com/reel/{$code}/";
+    }
+
+    /**
+     * Retorna o código do reel do Instagram a partir de qualquer link
+     */
+    public static function instagramReelCode(mixed $url): ?string
+    {
+        $url = self::scalarToString($url);
+
+        if (! preg_match('~^https?://(?:www\.)?instagram\.com/(?:[\w.]+/)?(?:reel|reels)/([\w-]+)~i', trim($url), $matches)) {
+            return null;
+        }
+
+        return $matches[1];
+    }
+
+    /**
+     * Normaliza o link de vídeo (YouTube ou reel do Instagram)
+     */
+    public static function sanitizeVideo(mixed $url): ?string
+    {
+        return self::sanitizeYoutube($url) ?? self::sanitizeInstagramReel($url);
+    }
+
+    /**
      * Retorna somente caracteres que podem ser visualizados
      */
     public static function printable(string $string): ?string
