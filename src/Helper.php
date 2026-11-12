@@ -307,7 +307,7 @@ final class Helper
     {
         $url = self::scalarToString($url);
 
-        if (! preg_match('~^https?://(?:www\.)?instagram\.com/(?:[\w.]+/)?(?:reel|reels)/([\w-]+)~i', trim($url), $matches)) {
+        if (! preg_match('~^https?://(?:www\.)?instagram\.com/(?:[\w.]+/)?(?:reel|reels)/([\w-]+)~i', mb_trim($url), $matches)) {
             return null;
         }
 
