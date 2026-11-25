@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use RuntimeException;
 use Throwable;
 
+// @phpstan-ignore trait.unused (used by the seeders of the projects)
 trait SeederSupport
 {
     /**
