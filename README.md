@@ -10,6 +10,7 @@ Itens úteis compartilhados entre os projetos da Agência F&MD: helpers de forma
 - Laravel ^12.0 | ^13.0
 - geekcom/validator-docs ^3.12
 - spatie/image-optimizer ^1.8
+- pbmedia/laravel-ffmpeg ^8.10 (com os binários `ffmpeg` e `ffprobe` no servidor)
 - ext-bcmath
 
 ## Instalação
