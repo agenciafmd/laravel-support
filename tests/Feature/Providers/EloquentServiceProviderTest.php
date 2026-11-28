@@ -4,26 +4,26 @@ declare(strict_types=1);
 
 namespace Agenciafmd\Support\Tests\Feature\Providers;
 
-use Agenciafmd\Faqs\Models\Faq;
+use Agenciafmd\Admix\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 pest()->extend(TestCase::class)->use(RefreshDatabase::class);
 
 it('lists simple select options keyed by id with an empty option first', function (): void {
-    $faq = Faq::factory()->create(['name' => 'Como funciona?']);
+    $user = User::factory()->create(['name' => 'Maria Silva']);
 
-    expect(Faq::query()->toSimpleSelectOptions())->toBe([
+    expect(User::query()->toSimpleSelectOptions())->toBe([
         '' => '-',
-        $faq->getKey() => 'Como funciona?',
+        $user->getKey() => 'Maria Silva',
     ]);
 });
 
 it('marks inactive records as disabled select options', function (): void {
-    $faq = Faq::factory()->create(['name' => 'Inativa', 'is_active' => false]);
+    $user = User::factory()->create(['name' => 'João Souza', 'is_active' => false]);
 
-    expect(Faq::query()->toSelectOptions(disabled: true))->toBe([
+    expect(User::query()->toSelectOptions(disabled: true))->toBe([
         ['label' => '-', 'value' => '', 'disabled' => false],
-        ['label' => 'Inativa', 'value' => $faq->getKey(), 'disabled' => true],
+        ['label' => 'João Souza', 'value' => $user->getKey(), 'disabled' => true],
     ]);
 });
