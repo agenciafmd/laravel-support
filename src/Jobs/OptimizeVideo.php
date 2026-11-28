@@ -30,8 +30,8 @@ final class OptimizeVideo implements ShouldQueue
     public function __construct(
         public string $disk,
         public string $path,
-        public int $width = 1920,
-        public int $height = 1080,
+        public int $width = 1440,
+        public int $height = 810,
         public bool $mute = true,
     ) {
         $this->onQueue('low');
