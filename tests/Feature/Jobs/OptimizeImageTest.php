@@ -38,7 +38,7 @@ it('replaces the image with the optimized version when it is smaller', function 
             ->andReturnUsing(static fn (string $path): int|false => file_put_contents($path, 'optimized'));
     });
 
-    OptimizeImage::dispatchSync('public', 'media/photo.png');
+    dispatch_sync(new OptimizeImage('public', 'media/photo.png'));
 
     expect(Storage::disk('public')->get('media/photo.png'))->toBe('optimized');
 });
@@ -54,7 +54,7 @@ it('keeps the original image when the optimized version is not smaller', functio
             ->andReturnUsing(static fn (string $path): int|false => file_put_contents($path, $original . 'bigger'));
     });
 
-    OptimizeImage::dispatchSync('public', 'media/photo.png');
+    dispatch_sync(new OptimizeImage('public', 'media/photo.png'));
 
     expect(Storage::disk('public')->get('media/photo.png'))->toBe($original);
 });
@@ -65,7 +65,7 @@ it('does not optimize files that are not images', function (): void {
 
     mock(OptimizerChain::class)->shouldNotReceive('optimize');
 
-    OptimizeImage::dispatchSync('public', 'media/document.txt');
+    dispatch_sync(new OptimizeImage('public', 'media/document.txt'));
 
     expect(Storage::disk('public')->get('media/document.txt'))->toBe('content');
 });
@@ -75,7 +75,7 @@ it('does nothing when the file no longer exists', function (): void {
 
     mock(OptimizerChain::class)->shouldNotReceive('optimize');
 
-    OptimizeImage::dispatchSync('public', 'media/missing.png');
+    dispatch_sync(new OptimizeImage('public', 'media/missing.png'));
 
     Storage::disk('public')->assertMissing('media/missing.png');
 });

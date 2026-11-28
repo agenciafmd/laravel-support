@@ -64,7 +64,7 @@ it('converts the video to H.264 with the exact dimensions, cropping the excess',
     Storage::fake('public');
     storeVideo('media/video.mp4', 640, 360);
 
-    OptimizeVideo::dispatchSync('public', 'media/video.mp4', 200, 200);
+    dispatch_sync(new OptimizeVideo('public', 'media/video.mp4', 200, 200));
 
     expect(videoStream('media/video.mp4'))->toBe(['codec_name' => 'h264', 'width' => 200, 'height' => 200])
         ->and(Storage::disk('public')->files('media'))->toBe(['media/video.mp4']);
@@ -74,7 +74,7 @@ it('removes the audio track by default', function (): void {
     Storage::fake('public');
     storeVideo('media/video.mp4', 640, 360);
 
-    OptimizeVideo::dispatchSync('public', 'media/video.mp4', 200, 200);
+    dispatch_sync(new OptimizeVideo('public', 'media/video.mp4', 200, 200));
 
     expect(audioStreamCount('media/video.mp4'))->toBe(0);
 });
@@ -83,7 +83,7 @@ it('keeps the audio track when it is not muted', function (): void {
     Storage::fake('public');
     storeVideo('media/video.mp4', 640, 360);
 
-    OptimizeVideo::dispatchSync('public', 'media/video.mp4', 200, 200, mute: false);
+    dispatch_sync(new OptimizeVideo('public', 'media/video.mp4', 200, 200, mute: false));
 
     expect(audioStreamCount('media/video.mp4'))->toBe(1);
 });
@@ -92,7 +92,7 @@ it('rounds odd dimensions down to even numbers', function (): void {
     Storage::fake('public');
     storeVideo('media/video.mp4', 640, 360);
 
-    OptimizeVideo::dispatchSync('public', 'media/video.mp4', 201, 101);
+    dispatch_sync(new OptimizeVideo('public', 'media/video.mp4', 201, 101));
 
     expect(videoStream('media/video.mp4'))->toMatchArray(['width' => 200, 'height' => 100]);
 });
@@ -101,7 +101,7 @@ it('does not convert files that are not videos', function (): void {
     Storage::fake('public');
     Storage::disk('public')->put('media/document.txt', 'content');
 
-    OptimizeVideo::dispatchSync('public', 'media/document.txt', 200, 200);
+    dispatch_sync(new OptimizeVideo('public', 'media/document.txt', 200, 200));
 
     expect(Storage::disk('public')->get('media/document.txt'))->toBe('content');
 });
@@ -109,7 +109,7 @@ it('does not convert files that are not videos', function (): void {
 it('does nothing when the file no longer exists', function (): void {
     Storage::fake('public');
 
-    OptimizeVideo::dispatchSync('public', 'media/missing.mp4', 200, 200);
+    dispatch_sync(new OptimizeVideo('public', 'media/missing.mp4', 200, 200));
 
     Storage::disk('public')->assertMissing('media/missing.mp4');
 });
@@ -122,7 +122,7 @@ it('keeps the video as uploaded and logs a warning when ffmpeg is not installed'
     config()->set('laravel-ffmpeg.ffprobe.binaries', '/nonexistent/ffprobe');
     Log::spy();
 
-    OptimizeVideo::dispatchSync('public', 'media/video.mp4', 200, 200);
+    dispatch_sync(new OptimizeVideo('public', 'media/video.mp4', 200, 200));
 
     expect(Storage::disk('public')->get('media/video.mp4'))->toBe($original)
         ->and(Storage::disk('public')->files('media'))->toBe(['media/video.mp4']);

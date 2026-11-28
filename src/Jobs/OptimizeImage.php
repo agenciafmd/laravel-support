@@ -6,6 +6,7 @@ namespace Agenciafmd\Support\Jobs;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Spatie\ImageOptimizer\OptimizerChain;
@@ -50,7 +51,7 @@ final class OptimizeImage implements ShouldQueue
             }
         } finally {
             if (is_file($temporaryPath)) {
-                unlink($temporaryPath);
+                File::delete($temporaryPath);
             }
         }
     }

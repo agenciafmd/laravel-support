@@ -8,6 +8,9 @@ use FFMpeg\Exception\ExecutableNotFoundException;
 use FFMpeg\Format\Video\X264;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Queue\Attributes\FailOnTimeout;
+use Illuminate\Queue\Attributes\Timeout;
+use Illuminate\Queue\Attributes\Tries;
 use Illuminate\Support\Facades\Storage;
 use ProtoneMedia\LaravelFFMpeg\Support\FFMpeg;
 
@@ -17,15 +20,12 @@ use ProtoneMedia\LaravelFFMpeg\Support\FFMpeg;
  * como o `ImageUploadWithAutomaticallyResize` faz com as imagens. Com `mute`, remove a trilha de áudio. Arquivos que não são vídeo são ignorados,
  * e o vídeo fica como foi enviado quando o servidor não tem o ffmpeg/ffprobe.
  */
+#[FailOnTimeout]
+#[Timeout(600)]
+#[Tries(1)]
 final class OptimizeVideo implements ShouldQueue
 {
     use Queueable;
-
-    public int $timeout = 600;
-
-    public int $tries = 1;
-
-    public bool $failOnTimeout = true;
 
     public function __construct(
         public string $disk,
@@ -63,11 +63,11 @@ final class OptimizeVideo implements ShouldQueue
 
         try {
             $media = FFMpeg::fromDisk($this->disk)->open($this->path);
-        } catch (ExecutableNotFoundException $exception) {
+        } catch (ExecutableNotFoundException $executableNotFoundException) {
             logger()->warning('Video not optimized: ffmpeg/ffprobe not found on the server.', [
                 'disk' => $this->disk,
                 'path' => $this->path,
-                'exception' => $exception->getMessage(),
+                'exception' => $executableNotFoundException->getMessage(),
             ]);
 
             return;
